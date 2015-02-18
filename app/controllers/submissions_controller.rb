@@ -341,6 +341,7 @@ class SubmissionsController < ApplicationController
   def download
     load_submission() or return false
     get_submission_file() or return false
+
     if params[:header_position] then
       file, pathname = getFileAt params[:header_position].to_i
       if not (file and pathname) then

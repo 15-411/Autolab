@@ -145,4 +145,5 @@ Autolab3::Application.routes.draw do
     end
 
   end
+
 end

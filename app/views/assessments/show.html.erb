@@ -100,4 +100,15 @@
 
 <% content_for :javascript do %>
   <%= javascript_include_tag "assessments_show" %>
+  <script>
+  var dispatcher = new WebSocketRails(window.location.host+'/websocket');
+  console.log('aud_<%= @aud.id %>');
+  var channel = dispatcher.subscribe('aud_<%= @aud.id %>');
+
+  channel.bind('updated_submission', function(msg) {
+    console.log('successfully received updated_submission');
+    console.log(msg)
+  });
+
+  </script>
 <% end %>

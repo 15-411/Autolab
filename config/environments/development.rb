@@ -27,4 +27,7 @@ Autolab3::Application.configure do
   config.assets.debug = true
 
   config.serve_static_files = true
+  
+  # Remove the Rack::Lock middleware for websockets
+  config.middleware.delete Rack::Lock
 end

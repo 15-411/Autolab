@@ -14,6 +14,6 @@
 //= require jquery_ujs
 //= require moment
 //= require bootstrap-datetimepicker
-//
 //= require websocket_rails/main
-
+//= require app-level
+//

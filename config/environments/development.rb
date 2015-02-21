@@ -25,9 +25,12 @@ Autolab3::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
-
   config.serve_static_files = true
   
   # Remove the Rack::Lock middleware for websockets
   config.middleware.delete Rack::Lock
+
+  # ID for Heap Analytics
+  config.x.analytics_id = nil
+
 end

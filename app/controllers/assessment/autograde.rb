@@ -37,6 +37,11 @@ module AssessmentAutograde
       autogradeDone(submissions, feedback_str)
     end
 
+    submissions.each do |sub|
+      aud = sub.aud
+      WebsocketRails['aud_'+aud.id.to_s].trigger 'updated_submission', sub
+    end
+
     render nothing: true and return
   rescue
     Rails.logger.error "Exception in autograde_done"

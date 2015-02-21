@@ -693,8 +693,6 @@ class AssessmentsController < ApplicationController
 
     @aud = @assessment.aud_for @cud.id
 
-    WebsocketRails['aud_'+@aud.id.to_s].trigger 'updated_submission', 'heyyyo'
-
     @list = {}
     @list_title = {}
 

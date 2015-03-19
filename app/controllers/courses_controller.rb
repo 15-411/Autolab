@@ -23,7 +23,6 @@ class CoursesController < ApplicationController
   end
 
   action_auth_level :show, :student
-
   def show
     redirect_to course_assessments_url(@course)
   end
@@ -31,7 +30,6 @@ class CoursesController < ApplicationController
   NEW_ROSTER_COLUMNS = 29
 
   action_auth_level :manage, :instructor
-
   def manage
     matrix = GradeMatrix.new @course, @cud
     cols = {}
@@ -143,12 +141,10 @@ class CoursesController < ApplicationController
 
 
   action_auth_level :edit, :instructor
-
   def edit
   end
 
   action_auth_level :update, :instructor
-
   def update
     if @course.update(edit_course_params)
       flash[:success] = "Success: Course info updated."
@@ -160,7 +156,6 @@ class CoursesController < ApplicationController
 
   # DELETE courses/:id/
   action_auth_level :destroy, :administrator
-
   def destroy
     unless current_user.administrator?
       flash[:error] = "Permission denied."
@@ -194,7 +189,6 @@ class CoursesController < ApplicationController
   # Only instructor (and above) can use this feature
   # to look up user accounts and fill in cud fields
   action_auth_level :userLookup, :instructor
-
   def userLookup
     if params[:email].length == 0
       flash[:error] = "No email supplied for LDAP Lookup"
@@ -216,7 +210,6 @@ class CoursesController < ApplicationController
   end
 
   action_auth_level :users, :instructor
-
   def users
     if params[:search]
       # left over from when AJAX was used to find users on the admin users list
@@ -227,14 +220,12 @@ class CoursesController < ApplicationController
   end
 
   action_auth_level :sudo, :instructor
-
   def sudo
     session[:sudo] = nil
     redirect_to course_course_user_datum_sudo_path(course_user_datum_id: @cud.id)
   end
 
   action_auth_level :reload, :instructor
-
   def reload
     if @course.reload_course_config
       flash[:success] = "Success: Course config file reloaded!"
@@ -250,7 +241,6 @@ class CoursesController < ApplicationController
   #   red - User is going to be dropped from the course
   #   black - User exists in the course
   action_auth_level :uploadRoster, :instructor
-
   def uploadRoster
     if request.post?
       # Check if any file is attached
@@ -438,7 +428,6 @@ file, most likely a duplicate email.  The exact error was: #{e} "
   end
 
   action_auth_level :downloadRoster, :instructor
-
   def downloadRoster
     @cuds = @course.course_user_data.where(instructor: false,
                                            course_assistant: false,
@@ -455,7 +444,6 @@ file, most likely a duplicate email.  The exact error was: #{e} "
   # creating it from scratch, or importing it from an existing
   # assessment directory.
   action_auth_level :installAssessment, :instructor
-
   def installAssessment
     @assignDir = File.join(Rails.root, "courses", @course.name)
     @availableAssessments = []
@@ -483,7 +471,6 @@ file, most likely a duplicate email.  The exact error was: #{e} "
   # email - The email action allows instructors to email the entire course, or
   # a single section at a time.  Sections are passed via params[:section].
   action_auth_level :email, :instructor
-
   def email
     if request.post?
       if params[:section].length > 0
@@ -513,13 +500,11 @@ file, most likely a duplicate email.  The exact error was: #{e} "
   end
 
   action_auth_level :moss, :instructor
-
   def moss
     @courses = Course.all
   end
 
   action_auth_level :runMoss, :instructor
-
   def runMoss
     # Return if we have no files to process.
     unless params[:assessments] || params[:external_tar]

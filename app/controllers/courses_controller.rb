@@ -2,12 +2,13 @@ require "archive.rb"
 require "csv"
 require "fileutils"
 require "Statistics.rb"
+require 'tempfile'
 
 class CoursesController < ApplicationController
   # you need to be able to pick a course to be authorized for it
   skip_before_action :authorize_user_for_course, only: [:index, :new, :create]
   # if there's no course, there are no persistent announcements for that course
-  skip_before_action :update_persistent_announcements, only: [ :index, :new, :create ]
+  skip_before_action :update_persistent_announcements, only: [:index, :new, :create]
 
   def index
     courses_for_user = User.courses_for_user current_user
@@ -22,6 +23,7 @@ class CoursesController < ApplicationController
   end
 
   action_auth_level :show, :student
+
   def show
     redirect_to course_assessments_url(@course)
   end
@@ -29,6 +31,7 @@ class CoursesController < ApplicationController
   NEW_ROSTER_COLUMNS = 29
 
   action_auth_level :manage, :instructor
+
   def manage
     matrix = GradeMatrix.new @course, @cud
     cols = {}
@@ -140,10 +143,12 @@ class CoursesController < ApplicationController
 
 
   action_auth_level :edit, :instructor
+
   def edit
   end
 
   action_auth_level :update, :instructor
+
   def update
     if @course.update(edit_course_params)
       flash[:success] = "Success: Course info updated."
@@ -155,6 +160,7 @@ class CoursesController < ApplicationController
 
   # DELETE courses/:id/
   action_auth_level :destroy, :administrator
+
   def destroy
     unless current_user.administrator?
       flash[:error] = "Permission denied."
@@ -177,10 +183,10 @@ class CoursesController < ApplicationController
   def report_bug
     if request.post?
       CourseMailer.bug_report(
-        params[:title],
-        params[:summary],
-        current_user,
-        @course
+          params[:title],
+          params[:summary],
+          current_user,
+          @course
       ).deliver
     end
   end
@@ -188,6 +194,7 @@ class CoursesController < ApplicationController
   # Only instructor (and above) can use this feature
   # to look up user accounts and fill in cud fields
   action_auth_level :userLookup, :instructor
+
   def userLookup
     if params[:email].length == 0
       flash[:error] = "No email supplied for LDAP Lookup"
@@ -201,14 +208,15 @@ class CoursesController < ApplicationController
       render(json: nil) && return
     end
 
-    @user_data = { first_name: user.first_name,
-                   last_name: user.last_name,
-                   email: user.email }
+    @user_data = {first_name: user.first_name,
+                  last_name: user.last_name,
+                  email: user.email}
 
     render json: @user_data
   end
 
   action_auth_level :users, :instructor
+
   def users
     if params[:search]
       # left over from when AJAX was used to find users on the admin users list
@@ -219,12 +227,14 @@ class CoursesController < ApplicationController
   end
 
   action_auth_level :sudo, :instructor
+
   def sudo
     session[:sudo] = nil
     redirect_to course_course_user_datum_sudo_path(course_user_datum_id: @cud.id)
   end
 
   action_auth_level :reload, :instructor
+
   def reload
     if @course.reload_course_config
       flash[:success] = "Success: Course config file reloaded!"
@@ -240,6 +250,7 @@ class CoursesController < ApplicationController
   #   red - User is going to be dropped from the course
   #   black - User exists in the course
   action_auth_level :uploadRoster, :instructor
+
   def uploadRoster
     if request.post?
       # Check if any file is attached
@@ -307,7 +318,7 @@ class CoursesController < ApplicationController
 
               elsif newCUD["color"] == "red"
                 # Drop this user from the course
-                existing = @course.course_user_data.includes(:user).where(users: { email: newCUD[:email] }).first
+                existing = @course.course_user_data.includes(:user).where(users: {email: newCUD[:email]}).first
 
                 if existing.nil?
                   fail "Red CUD doesn't exist in the database."
@@ -318,7 +329,7 @@ class CoursesController < ApplicationController
 
               else
                 # Update this user's attributes.
-                existing = @course.course_user_data.includes(:user).where(users: { email: newCUD[:email] }).first
+                existing = @course.course_user_data.includes(:user).where(users: {email: newCUD[:email]}).first
 
                 if existing.nil?
                   fail "Black CUD doesn't exist in the database."
@@ -373,15 +384,15 @@ file, most likely a duplicate email.  The exact error was: #{e} "
           csv = detectAndConvertRoster(params["upload"]["file"].read)
           csv.each do |row|
             next if row[1].nil? || row[1].chomp.size == 0
-            newCUD = { email: row[1].to_s,
-                       last_name: row[2].to_s.chomp(" "),
-                       first_name: row[3].to_s.chomp(" "),
-                       school: row[4].to_s.chomp(" "),
-                       major: row[5].to_s.chomp(" "),
-                       year: row[6].to_s.chomp(" "),
-                       grade_policy: row[7].to_s.chomp(" "),
-                       lecture: row[9].to_s.chomp(" "),
-                       section: row[10].to_s.chomp(" ") }
+            newCUD = {email: row[1].to_s,
+                      last_name: row[2].to_s.chomp(" "),
+                      first_name: row[3].to_s.chomp(" "),
+                      school: row[4].to_s.chomp(" "),
+                      major: row[5].to_s.chomp(" "),
+                      year: row[6].to_s.chomp(" "),
+                      grade_policy: row[7].to_s.chomp(" "),
+                      lecture: row[9].to_s.chomp(" "),
+                      section: row[10].to_s.chomp(" ")}
             cud = @currentCUDs.find do |cud|
               cud.user && cud.user.email == newCUD[:email]
             end
@@ -398,7 +409,7 @@ file, most likely a duplicate email.  The exact error was: #{e} "
         rescue Exception => e
           raise e
           flash[:error] = "Error uploading the CSV file!: " +
-                          e.to_s + e.backtrace.join("<br>")
+              e.to_s + e.backtrace.join("<br>")
           redirect_to(action: "uploadRoster") && return
         end
 
@@ -409,16 +420,16 @@ file, most likely a duplicate email.  The exact error was: #{e} "
             cud.instructor? || cud.user.administrator? || cud.course_assistant?
           end
           for cud in @currentCUDs do # These are the drops
-            newCUD = { email: cud.user.email,
-                       last_name: cud.user.last_name,
-                       first_name: cud.user.first_name,
-                       school: cud.school,
-                       major: cud.major,
-                       year: cud.year,
-                       grade_policy: cud.grade_policy,
-                       lecture: cud.lecture,
-                       section: cud.section,
-                       color: "red" }
+            newCUD = {email: cud.user.email,
+                      last_name: cud.user.last_name,
+                      first_name: cud.user.first_name,
+                      school: cud.school,
+                      major: cud.major,
+                      year: cud.year,
+                      grade_policy: cud.grade_policy,
+                      lecture: cud.lecture,
+                      section: cud.section,
+                      color: "red"}
             @cuds << newCUD
           end
         end
@@ -427,6 +438,7 @@ file, most likely a duplicate email.  The exact error was: #{e} "
   end
 
   action_auth_level :downloadRoster, :instructor
+
   def downloadRoster
     @cuds = @course.course_user_data.where(instructor: false,
                                            course_assistant: false,
@@ -443,6 +455,7 @@ file, most likely a duplicate email.  The exact error was: #{e} "
   # creating it from scratch, or importing it from an existing
   # assessment directory.
   action_auth_level :installAssessment, :instructor
+
   def installAssessment
     @assignDir = File.join(Rails.root, "courses", @course.name)
     @availableAssessments = []
@@ -470,6 +483,7 @@ file, most likely a duplicate email.  The exact error was: #{e} "
   # email - The email action allows instructors to email the entire course, or
   # a single section at a time.  Sections are passed via params[:section].
   action_auth_level :email, :instructor
+
   def email
     if request.post?
       if params[:section].length > 0
@@ -488,30 +502,37 @@ file, most likely a duplicate email.  The exact error was: #{e} "
       bccString = makeDlist(@cuds)
 
       @email = CourseMailer.course_announcement(
-        params[:from],
-        bccString,
-        params[:subject],
-        params[:body],
-        @cud,
-        @course)
+          params[:from],
+          bccString,
+          params[:subject],
+          params[:body],
+          @cud,
+          @course)
       @email.deliver
     end
   end
 
   action_auth_level :moss, :instructor
+
   def moss
     @courses = Course.all
   end
 
   action_auth_level :runMoss, :instructor
+
   def runMoss
     # Return if we have no files to process.
     unless params[:assessments] || params[:external_tar]
       flash[:error] = "No input files provided for MOSS."
       redirect_to(action: :moss) && return
     end
+
+    @mossCmd = [Rails.root.join("vendor", "mossnet -d")]
+    # Create a temporary directory for MOSS
+    tmpAssessmentsDir = Dir.mktmpdir("#{@cud.user.email}Moss", Rails.root.join("tmp"))
     assessmentIDs = params[:assessments]
     assessments = []
+    @failures = []
 
     # First, validate access on each of the requested assessments
     if assessmentIDs
@@ -521,7 +542,7 @@ file, most likely a duplicate email.  The exact error was: #{e} "
           flash[:error] = "Invalid Assessment ID: #{aID}"
           redirect_to(action: :moss) && return
         end
-        assessmentCUD = assessment.course.course_user_data.joins(:user).find_by(users: { email: current_user.email }, instructor: true)
+        assessmentCUD = assessment.course.course_user_data.joins(:user).find_by(users: {email: current_user.email}, instructor: true)
         if !assessmentCUD && (!@cud.user.administrator?)
           flash[:error] = "Invalid User"
           redirect_to(action: :moss) && return
@@ -530,17 +551,10 @@ file, most likely a duplicate email.  The exact error was: #{e} "
       end
     end
 
-    @mossCmd = [Rails.root.join("vendor", "mossnet -d")]
-
-    # Create a temporary directory for this
-    tmpDir = Dir.mktmpdir("#{@cud.user.email}Moss", Rails.root.join("tmp"))
-
-    @failures = []
-
-    # for each assessment
+    # Process selected assessments
     for ass in assessments do
-      # Create a directory for ths assessment
-      assDir = File.join(tmpDir, "#{ass.name}-#{ass.course.name}")
+      # Create a tmp directory for ths assessment
+      assDir = File.join(tmpAssessmentsDir, "#{ass.name}-#{ass.course.name}")
       Dir.mkdir(assDir)
 
       isArchive = params[:isArchive][ass.id.to_s]
@@ -586,50 +600,53 @@ file, most likely a duplicate email.  The exact error was: #{e} "
       @mossCmd << File.join(assDir, "*", params["files"][ass.id.to_s])
     end
 
-    # Grasp the external code source (tarball).
+    # Process the external code source (tarball).
     external_tar = params[:external_tar]
-    if external_tar   # Sanity check.
-      # Directory to hold tar ball and all individual files.
-      extTarDir = File.join(tmpDir, "external_input")
-      Dir.mkdir(extTarDir)
 
-      # Read in the tarfile from the given source.
-      extTarPath = File.join(extTarDir, "input_file")
-      external_tar.rewind
-      File.open(extTarPath, "wb") { |f| f.write(external_tar.read) } # Write tar file.
+    if external_tar # Sanity check.
+      # Read in the tarball from the given source.
+      extTarPath = Tempfile.new(['externalMOSS', 'tar'], Rails.root.join('tmp'))
+      File.open(extTarPath, "wb") { |f| f.write(external_tar.read); } # Write tar file.
 
-      # Directory to hold all external individual submission.
-      extFilesDir = File.join(extTarDir, "submissions")
-      Dir.mkdir(extFilesDir)                    # To hold all submissions
-      Dir.chdir(extFilesDir)
+      # Directory to hold all external submissions.
+      tmpExternalDir = Dir.mktmpdir("#{@cud.user.email}ExtractedMoss", Rails.root.join("tmp"))
+      Dir.mkdir(tmpExternalDir)
+      Dir.chdir(tmpExternalDir)
 
-      # Untar the given Tar file.
+      # Process the given Tar file.
+      # If plain file / directory, copy as is; otherwise extract its contents.
       begin
         archive_extract = Archive.get_archive(extTarPath)
-
-        # write each file, renaming nested files
         archive_extract.each do |entry|
           pathname = Archive.get_entry_name(entry)
           unless Archive.looks_like_directory?(pathname)
-            pathname.gsub!(/\//, "-")
-            destination = File.join(extFilesDir, pathname)
-            # make sure all subdirectories are there
-            File.open(destination, "wb") do |out|
-              out.write Archive.read_entry_file(entry)
-              out.fsync rescue nil # for filesystems without fsync(2)
+            destination = File.join(tmpExternalDir, pathname)
+            FileUtils.mkdir_p(File.dirname destination)
+            File.open(destination, "wb") { |f| f.write(entry.read); }
+            if !pathname.include? "/"
+              if Archive.is_archive?(destination)
+                File.open(destination, "wb") do |out|
+                  out.write Archive.read_entry_file(entry)
+                  out.fsync rescue nil # for filesystems without fsync(2)
+                end
+                FileUtils.remove(destination) # Remove the extracted archive
+              else
+                FileUtils.mkdir_p(destination)
+                FileUtils.move(destination, File.join(destination, pathname))
+              end
             end
           end
         end
       rescue
-        @failures << "External Tar"
+        @failures << "External Tarball"
       end
 
       # Feed the uploaded files to MOSS.
-      @mossCmd << File.join(extFilesDir, "*")
+      @mossCmd << File.join(tmpExternalDir, "**/*")
     end
 
     # Ensure that all files in Moss tmp dir are readable
-    system("chmod -R a+r #{tmpDir}")
+    system("chmod -R a+r #{tmpAssessmentsDir}")
 
     # Now run the Moss command
     @mossCmdString = @mossCmd.join(" ")

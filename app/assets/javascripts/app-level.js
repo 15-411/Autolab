@@ -25,7 +25,13 @@ $(function () {
 })
 
 
-var $ratio = 12.5;
+if ($( document ).width() > 768) {
+  var $ratio = 12.5
+}
+else {
+  var $ratio = 18;
+}
+
 var ferris = $("#ferris"),
     center = $("#center"),
     tl;

@@ -25,7 +25,7 @@ cd bin
 bundle install
 cd ..
 cd config
-mv database.yml.template database.yml
+sed -n '12,16p' < database.yml.template | sed -e "s/#//g" >> database.yml
 
 log "Initializing Autolab configurations..."
     cp $AUTOLAB_PATH/config/database.yml.template $AUTOLAB_PATH/config/database.yml

@@ -55,11 +55,15 @@ sed -n '12,16p' < database.yml.template | sed -e "s/#//g" >> database.yml
 log "Initializing Autolab configurations..."
     cp $AUTOLAB_PATH/config/database.yml.template $AUTOLAB_PATH/config/database.yml
     sed -i "s/<username>/$USER/g" $AUTOLAB_PATH/config/database.yml
+gem install rake
+gem install nokogiri
+gem uninstall libv8
+gem uninstall therubyracer
+gem install libv8
+gem install therubyracer
+bundle install
 
 bundle exec rake db:create
 bundle exec rake db:reset
 bundle exec rake db:migrate
 bundle exec rake autolab:populate
-
-echo "Re-installing nokogiri..."
-gem install nokogiri

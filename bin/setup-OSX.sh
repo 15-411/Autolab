@@ -4,6 +4,10 @@
 
 brew update
 brew install sqlite
+brew unlink autoconf
+brew link autoconf
+brew unlink pkg-config
+brew link pkg-config
 brew install rbenv
 brew install ruby-build
 git clone git@github.com:autolab/Autolab.git
@@ -12,12 +16,33 @@ rbenv install $(cat .ruby-version)
 echo “USER CHECK: Make sure the following two lines are …/ruby and …/rake”
 which ruby
 which rake
-echo “Are these correct? [y/n]”
-read y
-if($y != ‘y’); then
+#echo "Are these correct? [Y/n]"
+#read y
+#if($y != "y" && $y != "Y"); then
+#  echo "Terminating installation..."
+#  exit
+#else
+#  echo "Proceeding with installation..."
+#fi
+
+yes() {
+  echo "Proceeding with installation..."
+}
+
+no() {
+  echo "Terminating installation..."
   exit
-else
-fi
+}
+
+read -r -p "Are these correct? [y/N] " response
+case "$response" in
+    [yY][eE][sS]|[yY])
+        yes
+        ;;
+    *)
+        no
+        ;;
+esac
 
 gem install bundler
 rbenv rehash
@@ -35,3 +60,6 @@ bundle exec rake db:create
 bundle exec rake db:reset
 bundle exec rake db:migrate
 bundle exec rake autolab:populate
+
+echo "Re-installing nokogiri..."
+gem install nokogiri

@@ -242,7 +242,16 @@ private
   def default_category_average(input)
     final_scores = input.values
     if final_scores.size > 0
-      final_scores.reduce(:+) / final_scores.size
+      totalScores = 0
+      totalPoints = 0
+
+      for score, total in final_scores
+
+          totalScores += score || 0
+          totalPoints += total
+      end
+
+      (totalScores / totalPoints) * 100
     else
       nil
     end
@@ -256,7 +265,7 @@ private
     user_id = id
     course.assessments.each do |a|
       next unless a.category_name == category
-      input[a.name] ||= a.aud_for(id).final_score as_seen_by
+      input[a.name] ||= [a.aud_for(id).final_score(as_seen_by), a.max_score]
     end
 
     # remove nil computed scores -- instructors shouldn't have to deal with nils

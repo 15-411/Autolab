@@ -127,6 +127,11 @@ h1#courseTitle {
   .max_score {
     color: #bbb;
   }
+
+  .material-icons {
+    top: 0.2em;
+    position: relative;
+  }
 }
 
 .grades tr.header > th:not(.cat_name),
@@ -149,6 +154,25 @@ h1#courseTitle {
 
 th.cat_avg {
   font-size: 0.9em;
+  font-weight: inherit;
+
+  .max_score {
+    color: #bbb;
+  }
+
+  .average {
+    padding: 0 0 0 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+}
+
+.what_if_grades {
+  margin: 1.14rem 0 0.912rem 0;
+
+  .what_if {
+    font-style: italic;
+  }
 }
 
 th.cat_name {

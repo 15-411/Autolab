@@ -11,18 +11,33 @@
 <% end %>
 
 <div class="gradebook">
-  <h4>Grades for <%= @_cud.email %></h4>
+  <div class="gradebook_header row">
+    <div class="col s8">
+      <h4>Grades for <%= @_cud.email %></h4>
+    </div>
 
-  <% if not @course.gb_message.blank? %>
-    <div class="gb_message"><%=raw(@course.gb_message)%></div>
-  <% end %>
+    <div class="col s4">
+      <div class="switch what_if_grades right-align">
+        <label>
+          Instructor Grades
+          <input name="what_if_grades" type="checkbox">
+          <span class="lever"></span>
+          <span class="what_if">What If?</span> Grades
+        </label>
+      </div>
+    </div>
 
+    <div class="col s12">
+      <% if not @course.gb_message.blank? %>
+        <div class="gb_message"><%=raw(@course.gb_message)%></div>
+      <% end %>
+    </div>
+  </div>
   <div class="grades_container">
     <% @categories_sorted.each_slice(2) do |cat_pair| %>
     <div class="row cat_pair">
       <% cat_pair.each do |cat| %>
-        <div class="col-md-6 cat_container">
-
+        <div class="col m6 cat_container">
         <div class="category">
           <table class="grades">
             <colgroup>
@@ -51,7 +66,7 @@
               <% @course.assessments_with_category(cat, @cud.student?).each do |asmt| %>
                 <% aud = asmt.aud_for @_cud  %>
                 <tr>
-                  <td>
+                <td>
                     <span>
                     <%= link_to asmt.display_name, course_assessment_path(@course, asmt) %>
                     <% unless @cud.student? %>
@@ -76,8 +91,8 @@
                     <% end %>
 
                   <% when AssessmentUserDatum::EXCUSED %>
-                    <% pronoun = @cud == @_cud ? "You" : @_cud.email %>
-                    <% tip = "#{pronoun} has been excused from #{asmt.display_name}." %>
+                    <% pronoun = @cud == @_cud ? "You have" : @_cud.email + " has" %>
+                    <% tip = "#{pronoun} been excused from #{asmt.display_name}." %>
                     <span class="excused label label-info tooltipped" data-html="true" title="<%= tip %>">
                       Excused
                     </span>
@@ -86,14 +101,14 @@
                     <% case aud.submission_status
                        when :submitted %>
                       <% if Time.now <= aud.assessment.grading_deadline %>
-                        <i class="glyphicon glyphicon-time tooltipped" title="Final score will be visible once grading is complete."></i>
+                         <span><i class="material-icons tooltipped" data-tooltip="Final score will be visible once grading is complete.">access_time</i>/<span class="max_score"><%= aud.assessment.max_score.to_s %></span></span>
                       <% else %>
                         <%= render_final_score aud %>
                       <% end %>
 
                     <% when :not_submitted %>
                       <% if Time.now <= aud.assessment.grading_deadline %>
-                        <i class="glyphicon glyphicon-exclamation-sign tooltipped" title="No submission was made."></i>
+                        <span><i class="glyphicon glyphicon-exclamation-sign tooltipped" title="No submission was made."></i>/<span class="max_score"><%= aud.assessment.max_score.to_s %></span></span>
                       <% else %>
                         <span class="not-submitted tooltipped" title="No submission was made.">
                           <%= render_final_score aud %>
@@ -103,6 +118,7 @@
                     <% when :not_yet_submitted %>
                       <% if Time.now <= aud.assessment.grading_deadline %>
                         <i class="glyphicon glyphicon-exclamation-sign tooltipped" title="No submission has been made yet."></i>
+                        <span><i class="glyphicon glyphicon-exclamation-sign tooltipped" title="No submission has been made yet."></i>/<span class="max_score"><%= aud.assessment.max_score.to_s %></span></span>
                       <% else %>
                         <span class="not-yet-submitted tooltipped" title="No submission has been made yet.">
                           <%= render_final_score aud %>
@@ -115,9 +131,7 @@
             <% end %>
             <tr class="footer">
               <th>Category Average</th>
-              <% if @course.grace_days > 0 %><th></th><% end %>
-              <th></th>
-              <th class="cat_avg"><%= computed_score { @_cud.category_average cat, @cud } %></td>
+              <th class="cat_avg" colspan="<%=(@course.grace_days > 0 ? "3" : "2") %>"><%= computed_score { @_cud.category_average cat, @cud } %></td>
             </tr>
           </table>
         </div>

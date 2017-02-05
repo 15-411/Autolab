@@ -246,12 +246,13 @@ private
       totalPoints = 0
 
       for score, total in final_scores
-
+        unless score.nil?
           totalScores += score || 0
           totalPoints += total
+        end
       end
 
-      (totalScores / totalPoints) * 100
+      {"average" => (totalScores / totalPoints) * 100, "totalScore" => totalScores, "totalPoints" => totalPoints}
     else
       nil
     end

@@ -110,8 +110,20 @@ module ApplicationHelper
   # TODO: fix during gradebook, handin history, etc. rewrite
   def computed_score(link = nil, nil_to_dash = true)
     value = yield
-    value = value ? value.round(1) : value
-    nil_to_dash && (value.nil?) ? raw("&ndash;") : value
+
+    if value.is_a?(Hash)
+      value["average"] = value["average"] ? value["average"].round(1) : value["average"]
+      value["average"] = nil_to_dash && (value["average"].nil?) ? raw("&ndash;") : value["average"]
+
+      score_html = '<span class="total_score">' + value["totalScore"].round(1).to_s + '</span>/'
+      score_html += '<span class="max_score">' + value["totalPoints"].round(1).to_s + '</span>'
+      score_html += '<span class="average">(' + value["average"].round(1).to_s + '%)</span>'
+      raw(score_html)
+    else
+      value = value ? value.round(1) : value
+      nil_to_dash && (value.nil?) ? raw("&ndash;") : value
+    end
+
   rescue ScoreComputationException => e
     image = image_tag("score_error.png", style: "width: 1.3em; height: 1.3em")
     (@cud.instructor? && link) ? link_to(image, link) : image

@@ -141,6 +141,8 @@ module ApplicationHelper
     fail "FATAL: can't be nil" unless fs
 
     link = link_to fs, history_url(@_cud, asmt)
+    link = '<span class="grade_received" data-assessment="' + asmt.name + '" data-grade="' + fs.to_s + '">' + link
+    link << "</span>"
 
     max_score = computed_score { asmt.max_score }
     max_score_s = '<span class="max_score">' + max_score.to_s + "</span>"

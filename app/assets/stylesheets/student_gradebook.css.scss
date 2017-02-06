@@ -202,3 +202,33 @@ th.cat_name {
     padding: 8px 0px;
   }
 }
+
+.grade-field {
+  display: inline-block;
+
+  input {
+    display: inline;
+    border: none;
+    height: 0.9em;
+    margin-bottom: 0;
+    padding: 0;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    width: 50px;
+    max-width: 100%;
+    font-size: inherit;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    box-sizing: content-box;
+    transition: none;
+    text-align: right;
+  }
+
+  input:active {
+    border: none;
+  }
+}

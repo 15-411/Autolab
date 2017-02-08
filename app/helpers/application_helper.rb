@@ -141,13 +141,32 @@ module ApplicationHelper
     fail "FATAL: can't be nil" unless fs
 
     link = link_to fs, history_url(@_cud, asmt)
-    link = '<span class="grade_received" data-assessment="' + asmt.name + '" data-grade="' + fs.to_s + '">' + link
+    link = '<span class="grade_received" '+ assessment_data_tags(aud) +'>' + link
     link << "</span>"
 
     max_score = computed_score { asmt.max_score }
     max_score_s = '<span class="max_score">' + max_score.to_s + "</span>"
 
     raw("#{link}/#{max_score_s}")
+  end
+
+  def assessment_data_tags(aud)
+    fs = computed_score(history_url(@_cud, aud.assessment), false) { aud.final_score @cud }
+
+    dataTag = ""
+    dataTag += "data-assessment='#{aud.assessment.name}'"
+
+    unless fs
+      fs = 0.0
+      dataTag += " data-noscore='true'"
+    end
+
+    dataTag += " data-grade='#{fs.to_s}'"
+
+    max_score = computed_score { aud.assessment.max_score }
+    dataTag += " data-max='#{max_score.to_s}'"
+
+    raw(dataTag)
   end
 
   # TODO: fix when rewriting handin history/student gradebook

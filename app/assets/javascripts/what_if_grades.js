@@ -25,12 +25,17 @@
 
 
   function recalculateGrades() {
+    var categoryAverages = [];
     $(".grades").each(function () {
       var totalPoints = 0;
       var totalPossible = 0;
       $(this).find("input[name=grade_input]").each(function () {
         if ($(this).parent().data("noscore")) {
-          return;
+          if (parseFloat($(this).val()) > 0) {
+            $(this).parent().removeData("noscore")
+          } else {
+            return;
+          }
         }
         totalPoints += parseFloat($(this).val());
         totalPossible += parseFloat($(this).parent().data("max"));
@@ -42,7 +47,11 @@
       footer.find(".total_score").text(totalPoints.toFixed(1));
       footer.find(".max_score").text(totalPossible.toFixed(1));
       footer.find(".average").text("("+average+"%)");
+
+      categoryAverages.push(average);
     });
+
+    var categoryWeights = 100 / categoryAverages.length();
   }
 
   var replacement_form = '<div class="grade-field">' +

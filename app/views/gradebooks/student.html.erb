@@ -131,7 +131,7 @@
             <% end %>
             <tr class="footer">
               <th>Category Average</th>
-              <th class="cat_avg" colspan="<%=(@course.grace_days > 0 ? "3" : "2") %>"><%= computed_score { @_cud.category_average cat, @cud } %></td>
+              <th class="cat_avg" colspan="<%=(@course.grace_days > 0 ? "3" : "2") %>"><%= computed_category_average { @_cud.category_average cat, @cud } %></td>
             </tr>
           </table>
         </div>

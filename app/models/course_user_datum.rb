@@ -233,8 +233,10 @@ private
                 end
                 Utilities.validated_score_value(v, method_name, true)
               else
+                #input = category_average_input(category, as_seen_by)
+                #byebug
                 default_category_average input
-    end
+              end
 
     average
   end
@@ -248,17 +250,37 @@ private
       for score, total in final_scores
         unless score.nil?
           totalScores += score || 0
-          totalPoints += total
+          totalPoints += total || 0
         end
       end
 
-      {"average" => (totalScores / totalPoints) * 100, "totalScore" => totalScores, "totalPoints" => totalPoints}
+      if totalPoints == 0
+        {"average" => 0, "totalScore" => totalScores, "totalPoints" => totalPoints}
+      else
+        {"average" => (totalScores / totalPoints) * 100, "totalScore" => totalScores, "totalPoints" => totalPoints}
+      end
+
     else
       nil
     end
   end
 
   def category_average_input(category, as_seen_by)
+    @category_average_input = {}
+    @category_average_input[as_seen_by] = {}
+    input = (@category_average_input[as_seen_by][category] = {})
+
+    user_id = id
+    course.assessments.each do |a|
+      next unless a.category_name == category
+      input[a.name] ||= [a.aud_for(id).final_score(as_seen_by), a.max_score]
+    end
+
+    # remove nil computed scores -- instructors shouldn't have to deal with nils
+    compact_hash input
+  end
+
+  def category_average_input_legacy(category, as_seen_by)
     @category_average_input ||= {}
     @category_average_input[as_seen_by] ||= {}
     input = (@category_average_input[as_seen_by][category] ||= {})
@@ -266,7 +288,7 @@ private
     user_id = id
     course.assessments.each do |a|
       next unless a.category_name == category
-      input[a.name] ||= [a.aud_for(id).final_score(as_seen_by), a.max_score]
+      input[a.name] ||= a.aud_for(id).final_score(as_seen_by)
     end
 
     # remove nil computed scores -- instructors shouldn't have to deal with nils
@@ -292,6 +314,10 @@ private
 
   def compact_hash(h)
     h.delete_if { |_, v| !v }
+  end
+
+  def deep_compact_hash(h)
+    h.delete_if { |_, v| (v.is_a?(Array) && !v.all? {|x| x.is_a? Float}) }
   end
 
   include CUDAssociationCache

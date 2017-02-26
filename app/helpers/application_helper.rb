@@ -111,6 +111,17 @@ module ApplicationHelper
   def computed_score(link = nil, nil_to_dash = true)
     value = yield
 
+    value = value ? value.round(1) : value
+    nil_to_dash && (value.nil?) ? raw("&ndash;") : value
+
+  rescue ScoreComputationException => e
+    image = image_tag("score_error.png", style: "width: 1.3em; height: 1.3em")
+    (@cud.instructor? && link) ? link_to(image, link) : image
+  end
+
+  def computed_category_average(link = nil, nil_to_dash = true)
+    value = yield
+    #byebug
     if value.is_a?(Hash)
       value["average"] = value["average"] ? value["average"].round(1) : value["average"]
       value["average"] = nil_to_dash && (value["average"].nil?) ? raw("&ndash;") : value["average"]
@@ -121,9 +132,14 @@ module ApplicationHelper
       raw(score_html)
     else
       value = value ? value.round(1) : value
-      nil_to_dash && (value.nil?) ? raw("&ndash;") : value
-    end
+      if (nil_to_dash && value.nil?)
+        score_html = '<span class="average">&ndash;</span>'
+      else
+        score_html = '<span class="average">(' +  value.to_s + '%)</span>'
+      end
 
+      raw(score_html)
+    end
   rescue ScoreComputationException => e
     image = image_tag("score_error.png", style: "width: 1.3em; height: 1.3em")
     (@cud.instructor? && link) ? link_to(image, link) : image

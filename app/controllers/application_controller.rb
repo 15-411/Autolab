@@ -117,7 +117,7 @@ protected
     if level == :administrator
       authentication_failed unless current_user.administrator
     else
-      authentication_failed unless @cud.has_auth_level?(level)
+      authentication_failed unless (@course.is_public_course? || @cud.has_auth_level?(level))
     end
   end
 
@@ -183,6 +183,9 @@ protected
       redirect_to(controller: :home, action: :error) && return
 
     when :unauthorized
+      if(@course.is_public_course && @cud == nil)
+        return
+      end
       flash[:error] = "User #{current_user.email} is not in this course"
       redirect_to(controller: :home, action: :error) && return
     end

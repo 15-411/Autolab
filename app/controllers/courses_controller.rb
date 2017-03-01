@@ -69,7 +69,7 @@ class CoursesController < ApplicationController
   def new
     # check for permission
     unless current_user.administrator?
-      flash[:error] = "Permission denied."
+      flash[:error] = "Permissionffffffffffffffff denied."
       redirect_to(root_path) && return
     end
     @newCourse = Course.new
@@ -80,7 +80,7 @@ class CoursesController < ApplicationController
   def create
     # check for permission
     unless current_user.administrator?
-      flash[:error] = "Permission denied."
+      flash[:error] = "Permissiogggggggggggggn denied."
       redirect_to(root_path) && return
     end
 
@@ -349,7 +349,7 @@ file, most likely a duplicate email.  The exact error was: #{e} "
         assessments << assessment
       end
     end
-		
+
 		# Create a temporary directory
     @failures = []
     tmp_dir = Dir.mktmpdir("#{@cud.user.email}Moss", Rails.root.join("tmp"))
@@ -372,10 +372,10 @@ file, most likely a duplicate email.  The exact error was: #{e} "
 		end
 		if not language.nil?
 			moss_params = [moss_params, "-l", params[:language_selection]].join(" ")
-		end				
+		end
 
 		# Create a temporary directory
-		# Get moss flags from text field 	
+		# Get moss flags from text field
 		moss_flags = ["mossnet" + moss_params + " -d"].join(" ")
     @mossCmd = [Rails.root.join("vendor", moss_flags)]
 
@@ -402,9 +402,9 @@ file, most likely a duplicate email.  The exact error was: #{e} "
 		end
 		if not language.nil?
 			moss_params = [moss_params, "-l", params[:language_selection]].join(" ")
-		end				
+		end
 
-		# Get moss flags from text field 	
+		# Get moss flags from text field
 		moss_flags = ["mossnet" + moss_params + " -d"].join(" ")
     @mossCmd = [Rails.root.join("vendor", moss_flags)]
 
@@ -429,12 +429,12 @@ file, most likely a duplicate email.  The exact error was: #{e} "
 private
 
   def new_course_params
-    params.require(:newCourse).permit(:name, :semester)
+    params.require(:newCourse).permit(:name, :semester, :is_public_course)
   end
 
   def edit_course_params
     params.require(:editCourse).permit(:name, :semester, :late_slack, :grace_days, :display_name, :start_date, :end_date,
-                                       :disabled, :exam_in_progress, :version_threshold, :gb_message,
+                                       :disabled, :exam_in_progress, :version_threshold, :gb_message, :is_public_course,
                                        late_penalty_attributes: [:kind, :value],
                                        version_penalty_attributes: [:kind, :value])
   end
@@ -737,7 +737,7 @@ private
 
   def extract_tar_for_moss(tmp_dir, external_tar, archive)
     return unless external_tar
-    
+
 			# Directory to hold tar ball and all individual files.
 	    extTarDir = File.join(tmp_dir, "external_input")
 	 		baseFilesDir = File.join(tmp_dir, "basefiles")
@@ -755,7 +755,7 @@ private
 
 	    # Directory to hold all external individual submission.
 	    extFilesDir = File.join(extTarDir, "submissions")
-		
+
 		begin
 			Dir.mkdir(extFilesDir) # To hold all submissions
 	    Dir.chdir(extFilesDir)

@@ -1,0 +1,34 @@
+<h2>Add New User to Course</h2>
+<div class=redText> * Indicates a required field</div>
+<%= form_for @newCUD, url: course_course_user_data_path do |f| %>
+
+<% if @newCUD.errors.any? %>
+	<div id="error_explanation">
+		<h2><%= pluralize(@newCUD.errors.count, "error") %>
+      prohibited the data from being saved:</h2>
+
+		<ul>
+			<% @newCUD.errors.full_messages.each do |msg| %>
+			<li><%= msg %></li>
+			<% end %>
+		</ul>
+	</div>
+<% end %>
+
+  <table width=70% class="verticalTable" >
+  <tr><th>Course</th><td><%= @course.display_name %></td></tr>
+
+  <%= f.fields_for :user, @newCUD.user do |u| %>
+    <tr><th>User Email: <a class=redText>*</a></th><td><%= u.email_field :email %></td>
+  		<td><a id="user-lookup">User Lookup</a>
+      <i class='smallText'> <b>(Enter email, then click this link to fill in user info from records)</b></i></td></tr>
+
+    <tr><th>First Name <a class=redText>*</a></th><td><%= u.text_field :first_name %></td>
+    <td class="smallText"></td></tr>
+    <tr><th>Last Name <a class=redText>*</a></th><td><%= u.text_field :last_name %></td>
+    <td class="smallText"></td></tr>
+
+  <% end %>
+
+  <tr><th>Nickname: </th><td><%= f.text_field :nickname %></td>
+  <td class="smallText">Anonymizing nickname to display on the public scoreboards</td> </tr>

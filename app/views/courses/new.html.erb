@@ -12,10 +12,14 @@
   help_text: "The current semester. Examples: f12, s13, m13" %>
 
   <div class="form-group input-field">
-    <%= text_field_tag :instructor_email, nil, class: "validate" %>	
+    <%= text_field_tag :instructor_email, nil, class: "validate" %>
     <label class="control-label" for="instructor_email">Instructor Email</label>
 		<p class="help-block">Email of an Instructor, they will set up the course from here!</p>
   </div>
 
+  <br>
+  <%= f.check_box :is_public_course %>
+  <td class="smallText">Users can register themselves for public courses without permission. </td><br>
+  <br>
   <%= f.submit "Create" , {:class=>"btn primary"} %>
 <% end %>

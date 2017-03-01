@@ -18,6 +18,10 @@ class CourseUserDataController < ApplicationController
     @newCUD.tweak = Tweak.new
   end
 
+  def newCUD_PublicCourse
+
+  end
+
   action_auth_level :create, :instructor
   def create
     cud_parameters = cud_params
@@ -57,7 +61,7 @@ class CourseUserDataController < ApplicationController
 
     if @newCUD.save
       flash[:success] = "Success: added user #{email} in #{@course.full_name}"
-      if @cud.user.administrator?
+      if @cud != nil and @cud.user.administrator?
         redirect_to([:users, @course]) && return
       else
         redirect_to(action: "new") && return
@@ -114,7 +118,7 @@ class CourseUserDataController < ApplicationController
         if @editCUD.save
           redirect_to(action: :show) && return
         else
-          flash[:error] = "Please complete all of your account information before continuing:"
+          flash[:error] = "Please complete all of your account informatggggggggggion before continuing:"
           @editCUD.errors.full_messages.each do |msg|
             flash[:error] += "<br>#{msg}"
           end
@@ -205,13 +209,23 @@ class CourseUserDataController < ApplicationController
 private
 
   def add_users_breadcrumb
+    if(@course.is_public_course)
+      return
+    end
     if @cud.instructor
       @breadcrumbs << (view_context.link_to "Users", [:users, @course])
     end
   end
 
   def cud_params
-    if @cud.administrator?
+
+    if(@course.is_public_course and @cud == nil)
+      params.require(:course_user_datum).permit(:school, :major, :year,
+                                                :lecture, :section, :instructor, :dropped, :nickname, :course_assistant,
+                                                user_attributes: [:first_name, :last_name, :email],
+                                                tweak_attributes: [:_destroy, :kind, :value])
+
+    elsif @cud.administrator?
       params.require(:course_user_datum).permit(:school, :major, :year,
                                                 :lecture, :section, :instructor, :dropped, :nickname, :course_assistant,
                                                 user_attributes: [:first_name, :last_name, :email],

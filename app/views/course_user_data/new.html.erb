@@ -64,13 +64,13 @@
   <tr><th>Nickname: </th><td><%= f.text_field :nickname %></td>
   <td class="smallText">Anonymizing nickname to display on the public scoreboards</td> </tr>
 
-  <tr><th>Lecture</th><td><%= if @cud.instructor? then f.text_field :lecture else @newCUD.lecture end %></td>
+  <tr><th>Lecture</th><td><%= if ((@course.is_public_course && @cud == nil) or @cud.instructor?) then f.text_field :lecture else @newCUD.lecture end %></td>
   <td class="smallText">Ex: 15213/18213</td></tr>
 
-  <tr><th>Section</th><td><%= if (@cud.instructor?) or (@newCUD.course.name == "15213-s11") then f.text_field :section else @newCUD.section end%></td>
-  <td class="smallText">Ex: C<% if @cud.instructor? %>. A course assistant can see the gradebook and bulk-release grades for their assigned <em>lecture and section</em>.<% end %></td></tr>
+  <tr><th>Section</th><td><%= if (((@course.is_public_course && @cud == nil) or @cud.instructor?)) or (@newCUD.course.name == "15213-s11") then f.text_field :section else @newCUD.section end%></td>
+  <td class="smallText">Ex: C<% if ((@course.is_public_course && @cud == nil) or @cud.instructor?) %>. A course assistant can see the gradebook and bulk-release grades for their assigned <em>lecture and section</em>.<% end %></td></tr>
 
-  <% if @cud.instructor? then %>
+  <% if (@cud != nil) and @cud.instructor? then %>
 
   <tr>
     <th>Course average tweak:</th>

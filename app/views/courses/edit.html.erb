@@ -25,11 +25,16 @@
 	  	</div>
 	</div>
 
+  <br>
+  <%= f.check_box :is_public_course %>
+  <td class="smallText">Users can register themselves for public courses without permission. </td><br>
+  <br>
+
 	<br>
 	<div class="row">
 		<div class="col s2 ">
 			<%= f.submit 'Save', { :class=> "btn primary" } %>
-		</div>	
+		</div>
 		<div class="col s3">
 			<% if current_user.administrator? %>
 			<%= link_to "Delete Course", course_path(@course), method: :delete,
@@ -37,7 +42,6 @@
 			<% end %>
 		</div>
 	</div>
-
 
 <% end %>
 

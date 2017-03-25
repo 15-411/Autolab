@@ -1,3 +1,15 @@
+<script class="js">
+// The following function was taken from
+// https://codepen.io/shaikmaqsood/pen/XmydxJ/
+function copyToClipboard(element) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand('copy');
+  $temp.remove();
+}
+ </script>
+
 <% content_for :javascripts do %>
   <%= javascript_include_tag "sorttable" %>
   <!--
@@ -39,7 +51,17 @@
 
 <h2>Manage Accounts</h2>
 
-<b>ShareLink: </b>
+<b>ShareLink:</b>
+<!--Target-->
+<b id="copylink"> <%= link_to request.url + url_for([:new, @course, :course_user_datum]), [:new, @course, :course_user_datum]%></b>
+
+<!-- Trigger -->
+<span class="btn" onclick="copyToClipboard('#copylink')">
+    Copy
+</span>
+
+<br>
+<small color="gray">(Copy this link and share it online so that students can register with it!)</small>
 
 <hr>
 <p>

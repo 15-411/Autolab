@@ -19,7 +19,7 @@
             <%= link_to course_path(course), title: "Go to Course Page" do %>
               <div class="card-content red darken-4">
                 <div class="row">
-                  <div class="col <%= not_student ? 's9' : 's12' %>"><small color="white"><%course.course_type%></small><h4><span class="card-title white-text"><%= course.full_name %></span></h4></div>
+                  <div class="col <%= not_student ? 's9' : 's12' %>"><font size="3" class="white-text"><%= course.course_type %></font><h4><span class="card-title white-text"><%= course.full_name %></span></h4></div>
                   <% if not_student %> <div class="col s3"><span class="new badge padded-badge" data-badge-caption="Instructor"></span></div> <% end %>
                 </div>
               </div>

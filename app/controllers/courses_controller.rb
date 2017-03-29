@@ -429,12 +429,12 @@ file, most likely a duplicate email.  The exact error was: #{e} "
 private
 
   def new_course_params
-    params.require(:newCourse).permit(:name, :semester, :is_public_course)
+    params.require(:newCourse).permit(:name, :semester, :is_public_course, :course_type)
   end
 
   def edit_course_params
     params.require(:editCourse).permit(:name, :semester, :late_slack, :grace_days, :display_name, :start_date, :end_date,
-                                       :disabled, :exam_in_progress, :version_threshold, :gb_message, :is_public_course,
+                                       :disabled, :exam_in_progress, :version_threshold, :gb_message, :is_public_course, :course_type,
                                        late_penalty_attributes: [:kind, :value],
                                        version_penalty_attributes: [:kind, :value])
   end

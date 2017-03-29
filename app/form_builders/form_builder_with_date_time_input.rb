@@ -56,6 +56,17 @@ class FormBuilderWithDateTimeInput < ActionView::Helpers::FormBuilder
     end
   end
 
+#  def select(name, *args)
+#    options = args.extract_options!
+#
+#    field  = super name, *(args + [options])
+#
+#  end
+
+def select(method, choices = nil, options = {}, html_options = {}, &block)
+  @template.select(@object_name, method, choices, objectify_options(options), @default_options.merge(html_options), &block)
+end
+
   def file_field(name, *args)
     options = args.extract_options!
 

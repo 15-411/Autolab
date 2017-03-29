@@ -30,10 +30,7 @@
   <td class="smallText">Users can register themselves for public courses without permission. </td><br>
   <br>
 
-  <%= select_tag(:course_type, options_for_select([['Course', 1],
-                                                   ['Programming Contest', 2],
-                                                   ['Interview', 3],
-                                                   ['Other', 4]], 4)) %>
+  <%= f.select :course_type, ["Course", "Programming Contest", "Interview", "Other"], include_blank: false %>
 
 	<br>
 	<div class="row">

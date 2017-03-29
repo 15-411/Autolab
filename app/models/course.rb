@@ -29,6 +29,10 @@ class Course < ActiveRecord::Base
   before_create :cgdub_dependencies_updated
   after_create :init_course_folder
 
+  scope :is_course, -> {where(course_type: "Course")}
+  scope :is_prg_contest, -> {where(course_type: "Programming Contest")}
+  scope :is_interview, -> {where(course_type: "Interview")}
+
   # generate course folder
   def init_course_folder
     course_dir = Rails.root.join("courses", name)

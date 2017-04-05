@@ -11,14 +11,6 @@ RSpec.describe HomeController, type: :controller do
     end
   end
 
-  describe "#developer_login" do
-    it "renders successfully" do
-      get :developer_login
-      expect(response).to be_success
-      expect(response.body).to match(/Development Autolab/m)
-    end
-  end
-
   describe "#error" do
     it "renders successfully" do
       get :error

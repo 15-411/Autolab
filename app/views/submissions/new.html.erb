@@ -7,6 +7,12 @@
   <script type="application/javascript">
     jQuery(function() {
       $('.chosen-select').chosen();
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+    });
+=======
+>>>>>>> Stashed changes
 		});
 
 		function filterNames(name) {
@@ -21,6 +27,10 @@
 			});
 		}
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> 6910e8e4d70ecaa5d9c1e0e0dfc6ae310c82772c
+>>>>>>> Stashed changes
   </script>
 <% end %>
 
@@ -47,7 +57,15 @@
   <th>User:</th>
   <td>
   <% if params[:course_user_datum_id].nil? then %>
+<<<<<<< Updated upstream
     <%= f.select(:course_user_datum_id, @cuds, {prompt: 'select user'}, {class: ''}) %>
+=======
+<<<<<<< HEAD
+    <%= f.select(:course_user_datum_id, @cuds, {prompt: 'select user'}, {class: 'chosen-select'}) %>
+=======
+    <%= f.select(:course_user_datum_id, @cuds, {prompt: 'select user'}, {class: ''}) %>
+>>>>>>> 6910e8e4d70ecaa5d9c1e0e0dfc6ae310c82772c
+>>>>>>> Stashed changes
   <% else %>
     <%= @cuds.collect { |u| u.email }.join(", ") %>
     <input type='hidden' name='submission[course_user_datum_id]' value='<%=@cuds.collect{ |u| u.id }.join(',')%>' />
@@ -62,13 +80,13 @@
   <th>File:</th><td><%= f.file_field :file %></td>
 </tr>
 <tr>
-  <th>Notes:</th><td><%= f.text_area :notes %></td>
+  <th>Notes:</th><td><%= f.text_area :notes, class: 'materialize-textarea', placeholder: "Notes on submission"%></td>
 </tr>
 <tr>
   <th>Tweak:</th>
   <td>
   <%= f.fields_for :tweak, @submission.tweak do |t| %>
-    <%= t.text_field :value %>
+    <%= t.text_field :value, placeholder: "Number of points or percentage" %>
     <%= t.select :kind, options_for_select({"points" => "points", "%" => "percent"}, :selected => (@submission.tweak ? @submission.tweak.kind : "points")) %>
   <% end %>
   </td>

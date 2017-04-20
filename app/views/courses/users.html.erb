@@ -53,11 +53,9 @@ function copyToClipboard(element) {
 
 <b>ShareLink:</b>
 <!--Target-->
-<b id="copylink"> <%= link_to request.url + url_for([:new, @course, :course_user_datum]), [:new, @course, :course_user_datum]%></b>
-
-<!-- Trigger -->
-<span class="btn" onclick="copyToClipboard('#copylink')">
-    Copy
+<b id="copylink" style="background-color:lightgrey; padding:5px;"> <%= request.url.sub!("users", "") + url_for("course_user_data/new")%></b><!--
+--><span onclick="copyToClipboard('#copylink')" style="background-color:grey; padding:5px; cursor:pointer; font-color:black">
+    Copy to Clipboard
 </span>
 
 <br>

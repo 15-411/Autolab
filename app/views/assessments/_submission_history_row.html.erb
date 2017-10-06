@@ -11,7 +11,7 @@
 
   <td>
     <% if submission.filename then %>
-      <%= render partial: "downloadSubmission", locals: {sub: submission, can_always_download: download_access} %>
+      <%= render partial: "downloadSubmission", locals: {sub: submission, can_always_download: download_access, problem: @problems[0]} %>
     <% else %>
       None
     <% end %>
@@ -22,16 +22,8 @@
   <% for problem in @problems do %>
     <td class="prettyBorder">
       <% if @scores[submission.id] and @scores[submission.id][problem.id] and @scores[submission.id][problem.id][:released] == 1 then
-        score = @scores[submission.id][problem.id]
-        if score[:feedback] then %>
-
-          <%= link_to (score[:score].to_f.round(1).to_s), { action: :viewFeedback,
-            submission_id: submission.id,
-            feedback: problem.id} %>
-
-        <% else %>
-          <%= score[:score].to_f.round(1).to_s %>
-        <% end %>
+        score = @scores[submission.id][problem.id] %>
+        <%= score[:score].to_f.round(1).to_s %>
       <% else %>
         <% unless problem.optional then
           dontTotal = true

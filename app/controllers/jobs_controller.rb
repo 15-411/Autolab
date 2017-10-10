@@ -41,8 +41,10 @@ class JobsController < ApplicationController
     raw_live_jobs.each do |rjob|
       if rjob["assigned"] == true
         @running_jobs << formatRawJob(rjob, true)
+        @running_jobs.sort! { |a, b| [b[:tlast], b[:id]] <=> [a[:tlast], a[:id]] }
       else
         @waiting_jobs << formatRawJob(rjob, true)
+        @waiting_jobs.sort! { |a, b| [b[:tlast], b[:id]] <=> [a[:tlast], a[:id]] }
       end
     end
 

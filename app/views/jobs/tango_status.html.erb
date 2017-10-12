@@ -28,7 +28,7 @@
     </tr>
   </thead>
   <tbody>
-    <% @tango_live_jobs.each do |j| %>
+    <% @tango_live_jobs.sort { |a, b| b["id"] <=>  a["id"] }.each do |j| %>
     <%   next unless j["assigned"] %>
     <tr>
       <td><%= j["id"] %></td>
@@ -53,7 +53,7 @@
     </tr>
   </thead>
   <tbody>
-    <% @tango_live_jobs.each do |j| %>
+    <% @tango_live_jobs.sort { |a, b| b["id"] <=>  a["id"] }.each do |j| %>
     <%   next if j["assigned"] %>
     <tr>
       <td><%= j["id"] %></td>

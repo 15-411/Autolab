@@ -15,7 +15,7 @@ This page shows you the status of current and recent autograding jobs.<br />
   <table class='prettyBorder sortable'>
   <tr><th>Job ID</th><th>Job Name</th><th>Submitted At</th>
   <th>Elapsed (s)</th><th>Status</th></tr>
-  <% for @job in @running_jobs do %>
+  <% for @job in @running_jobs.sort { |a, b| b[:id] <=>  a[:id] } do %>
     <tr>
     <td> <%= @job[:id] %> </td> 
     <td> <%= @job[:name] %> </td> 
@@ -43,7 +43,7 @@ This page shows you the status of current and recent autograding jobs.<br />
 <% else %>
   <table class='prettyBorder sortable'>
   <tr><th>Job ID</th><th>Job Name</th><th>Submitted At</th><th>Elapsed (s)</th><th>Status</th></tr>
-  <% for @job in @waiting_jobs do %>
+  <% for @job in @waiting_jobs.sort { |a, b| b[:id] <=>  a[:id] } do %>
     <tr>
     <td> <%= @job[:id] %> </td> 
     <td> <%= @job[:name] %> </td> 
@@ -89,7 +89,7 @@ end
   <table class='prettyBorder sortable'>
   <tr><th>Job ID</th><th>Job Name</th><th>Submitted At</th>
   <th>Elapsed (s)</th><th>Status</th></tr>
-  <% for @job in @dead_jobs_view do %>
+  <% for @job in @dead_jobs_view.sort { |a, b| b[:id] <=>  a[:id] } do %>
     <tr <% if @job[:state] == "Failed" then %> style="background-color:#ce4844; color:#fff"<% end %>>    <td> <%= @job[:id] %> </td>
     <td> <%= @job[:name] %> </td> 
     <td> <span class="moment-date-time"><%= DateTime.parse(@job[:first]).to_time.in_time_zone.to_s %></span> </td> 

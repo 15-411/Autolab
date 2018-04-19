@@ -68,8 +68,8 @@ Here are some resources to get you started.
       <h3>I just set up Autolab. How can I make myself an admin?</h3>
       <p>
       We have a Rake task that you can run where your app is deployed to promote
-      any user to the admin level. Just run <code>rake
-      'promote_to_admin[you@example.com]'</code> to give a user administrative
+      any user to the admin level. Just run <code>bundle exec rake
+      'admin:promote_user[you@example.com]'</code> to give a user administrative
       priviledges. Note that the user has to exist already.
       </p>
     </div>

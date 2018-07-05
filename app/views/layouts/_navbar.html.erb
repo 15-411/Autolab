@@ -63,7 +63,7 @@
         <% end %>
 
         <% if current_user && current_user.administrator? %>
-          <li><%= link_to "<i class='material-icons left'>lock</i> Manage Autolab".html_safe, admin_path, title: "Perform system-wide administrative actions" %></li>
+          <li><%= link_to "<i class='material-icons left'>lock</i> Manage Notolab".html_safe, admin_path, title: "Perform system-wide administrative actions" %></li>
         <% end %>
 
         <% if user_signed_in? %>
@@ -122,7 +122,7 @@
         <% end %>
 
         <% if current_user && current_user.administrator? %>
-          <li><%= link_to "<i class='material-icons left'>lock</i> Manage Autolab".html_safe, admin_path, title: "Perform system-wide administrative actions" %></li>
+          <li><%= link_to "<i class='material-icons left'>lock</i> Manage Notolab".html_safe, admin_path, title: "Perform system-wide administrative actions" %></li>
         <% end %>
       </ul>
 

@@ -166,7 +166,9 @@ class JobsController < ApplicationController
   def tango_status
     # Obtain overall Tango info and pool status
     @tango_info = TangoClient.info
-    @vm_pool_list = TangoClient.pool
+    @vm_pool_resp = TangoClient.pool
+    @vm_pool_list = @vm_pool_resp['pools']
+    @vm_scale_params = [@vm_pool_resp['low_water_mark'], @vm_pool_resp['max_pool_size']]
     # Obtain Image -> Course mapping
     @img_to_course = {}
     Assessment.find_each do |asmt|

@@ -77,7 +77,7 @@ module TangoClient
       url = image.nil? ? "/pool/#{api_key}/" : "/pool/#{api_key}/#{image}/"
       ClientObj.get(url)
     end
-    resp["pools"]
+    resp
   end
 
   def self.prealloc(image, num, options = {})

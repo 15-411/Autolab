@@ -87,6 +87,13 @@ module TangoClient
     end
   end
 
+  def self.scale(min, max)
+    handle_exceptions do
+      url = "/scale/#{api_key}/#{min}/#{max}/"
+      ClientObj.post(url)
+    end
+  end
+
   def self.api_key
     RESTFUL_KEY
   end

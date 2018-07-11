@@ -196,6 +196,12 @@ class JobsController < ApplicationController
     render(json: @data) && return
   end
 
+  action_auth_level :tango_scale, :instructor
+  def tango_scale
+    TangoClient.scale params[:min], params[:max]
+    redirect_to tango_status_course_jobs_path
+  end
+
 protected
 
   # formatRawJob - Given a raw job from the server, creates a job

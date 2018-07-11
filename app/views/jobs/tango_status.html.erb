@@ -97,10 +97,11 @@
     <% end %>
   </tbody>
 </table>
-<ul>
-<li>Low water mark: <%= @vm_scale_params[0] %></li>
-<li>Max pool size: <%= @vm_scale_params[1] %></li>
-</ul>
+<%= form_tag "tango_scale" do %>
+    <label>Low water mark: <input type="number" name="min" value="<%= @vm_scale_params[0] %>"></label>
+    <label>Max pool size: <input type="number" name="max" value="<%= @vm_scale_params[1] %>"></label><br>
+    <input type="submit" value="Update">
+<% end %>
 <h3>Autograding Images in Use</h3>
 <table class="navigatable prettyBorder sortable">
   <thead>

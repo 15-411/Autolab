@@ -386,6 +386,16 @@ class AssessmentsController < ApplicationController
     redirect_to(course_path(@course)) && return
   end
 
+  def standardize_bool b
+    if (b.is_a? TrueClass) || (b.is_a? FalseClass)
+      return b
+    elsif (b.is_a? String) && (b.downcase == "true" || b.downcase == "t")
+      return true
+    end
+    c = b.to_i
+    return c != 0
+  end
+
   action_auth_level :show, :student
   def show
     set_handin
@@ -434,7 +444,7 @@ class AssessmentsController < ApplicationController
         score: result["score"].to_f,
         feedback: result["feedback"],
         score_id: result["score_id"].to_i,
-        released: result["released"].to_i
+        released: (standardize_bool result["released"]) ? 1 : 0
       }
     end
 
@@ -477,7 +487,7 @@ class AssessmentsController < ApplicationController
         score: result["score"].to_f,
         feedback: result["feedback"],
         score_id: result["score_id"].to_i,
-        released: result["released"].to_i
+        released: (standardize_bool result["released"]) ? 1 : 0
       }
     end
 

@@ -150,6 +150,89 @@
         <% end %>
       </div>
       <%= render partial: "handin_form", locals: {modal: false, id: "handin_show_assessment"} %>
+      <% if @assessment.embedded_quiz %>
+          <script>
+              $.fn.serializeObject = function()
+              {
+                  var o = {};
+                  var a = this.serializeArray();
+                  $.each(a, function() {
+                      if (o[this.name] !== undefined) {
+                          if (!o[this.name].push) {
+                              o[this.name] = [o[this.name]];
+                          }
+                          o[this.name].push(this.value || '');
+                      } else {
+                          o[this.name] = this.value || '';
+                      }
+                  });
+                  return o;
+              };
+
+              $(function() {
+                  $('form').submit(function() {
+                      $('#results').text(JSON.stringify($('#quiz_form').serializeObject()));
+                      showForm();
+                      //return false;
+                  });
+              });
+
+              function showForm() {
+                  var save = document.getElementById('results').innerHTML;
+                  console.log(save);
+                  document.getElementById("submission_embedded_quiz_form_answer").value = save;
+              }
+
+          </script>
+
+          <% if @can_submit %>
+          <div class = "row card-action" style="border-top: 0px; margin-top: 0px; padding-top: 0px;">
+            <div class = "col">
+              <%= form_for @submission, url: {action: :handin}, :html => {:id => "quiz_form", :onclick => "return validateIntegrity();"}, method: :post do |f| %>
+
+                  <%= f.hidden_field :embedded_quiz_form_answer, value: "" %>
+
+                  <%# Render instructor's custom quiz form elements. %>
+                  <p>
+                    <% begin %>
+                        <%= @assessment.embedded_quiz_form_data.html_safe %>
+                    <% rescue %>
+                      <p style = "color: red">Your assessment has no content yet! </p>
+                    <% end %>
+                  </p>
+
+                  <!-- Academic integrity checkbox -->
+                  <%= check_box_tag(:integrity_checkbox) %>
+                  <%= label_tag(:integrity_checkbox, "I affirm that I have complied with this course's academic integrity policy as defined in the syllabus.") %>
+
+                  <div class = "row" style = "padding-top: 10px">
+                    <div id="submission_error" class="col s6 m8 center-align" style = "color: red"></div>
+                    <% if @aud.past_due_at? then %>
+                        <div class="col s6 m4 center-align"><%= f.submit("Submit Late", id:"fake-submit",  class: "btn primary handin-btn", onclick: "setSubmitClicked()") %></div>
+                    <% else %>
+                        <div class="col s6 m4 center-align"><%= f.submit("Submit", id:"fake-submit", class: "btn primary handin-btn", onclick: "setSubmitClicked()") %></div>
+                    <% end %>
+                  </div>
+                  <div class="row">
+                    <% if @assessment.max_submissions != -1 then %>
+                      <% numSubmissions = @submissions.size %>
+                      <% if numSubmissions > @assessment.max_submissions then %>
+                        <% numSubmissions = 0 %>
+                      <% else %>
+                        <% numSubmissions = @assessment.max_submissions - numSubmissions %>
+                      <% end %>
+                      <div class="smallText col s6 offset-s6 m4 offset-m8 center-align" style="padding-top: 6px">&nbsp;&nbsp;(<%= numSubmissions %> submissions left)</div>
+                    <% else %>
+                      <div class="smallText col s6 offset-s6 m4 offset-m8 center-align" style="padding-top: 6px">(&nbsp;&#x221e;&nbsp;&nbsp;submissions left)</div>
+                    <% end %>
+                  </div>
+
+              <% end %>
+            </div>
+          </div>
+          <% end %>
+        <% end %>
+
     </div>
   </div>
 </div>
@@ -188,82 +271,7 @@
 
   <% end %>
 
-  <% if @assessment.embedded_quiz %>
-      <script>
-          $.fn.serializeObject = function()
-          {
-              var o = {};
-              var a = this.serializeArray();
-              $.each(a, function() {
-                  if (o[this.name] !== undefined) {
-                      if (!o[this.name].push) {
-                          o[this.name] = [o[this.name]];
-                      }
-                      o[this.name].push(this.value || '');
-                  } else {
-                      o[this.name] = this.value || '';
-                  }
-              });
-              return o;
-          };
-
-          $(function() {
-              $('form').submit(function() {
-                  $('#results').text(JSON.stringify($('#quiz_form').serializeObject()));
-                  showForm();
-                  //return false;
-              });
-          });
-
-          function showForm() {
-              var save = document.getElementById('results').innerHTML;
-              console.log(save);
-              document.getElementById("submission_embedded_quiz_form_answer").value = save;
-          }
-
-      </script>
-
-      <% if @cud.instructor %>
-          <div class = "row">
-            <div class = "col s12 offset-s0">
-              <b>This is how students will view this assessment:</b>
-            </div>
-          </div>
-      <% end %>
-
-      <div class = "row">
-        <div class = "col s10 offset-s1">
-          <hr>
-          <%= form_for @submission, url: {action: :handin}, :html => {:id => "quiz_form", :onclick => "return validateIntegrity();"}, method: :post do |f| %>
-
-              <%= f.hidden_field :embedded_quiz_form_answer, value: "" %>
-
-              <%# Render instructor's custom quiz form elements. %>
-              <p>
-                <% begin %>
-                    <%= @assessment.embedded_quiz_form_data.html_safe %>
-                <% rescue %>
-                  <p style = "color: red">Your assessment has no content yet! </p>
-                <% end %>
-              </p>
-
-              <!-- Academic integrity checkbox -->
-              <%= check_box_tag(:integrity_checkbox) %>
-              <%= label_tag(:integrity_checkbox, "I affirm that I have complied with this course's academic integrity policy as defined in the syllabus.") %>
-
-              <div class = "row" style = "margin-top: 10px !important">
-                <input type="submit" class = "btn primary handin-btn" onclick = "setSubmitClicked()">
-                <span id="submission_error" style = "margin-left: 10px !important; color: red"></span>
-              </div>
-
-          <% end %>
-          <hr>
-        </div>
-      </div>
-
-      <pre class="hide" id="results"></pre>
-
-  <% end %>
+  <pre class="hide" id="results"></pre>
 
   <% if @assessment.exam? %>
       <% if download_access %>

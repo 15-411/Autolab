@@ -33,6 +33,7 @@ Autolab3::Application.routes.draw do
         get "tango_status"
         get "tango_data"
         post "tango_scale"
+        post "tango_prealloc"
       end
     end
     resources :announcements, except: :show

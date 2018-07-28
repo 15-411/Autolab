@@ -202,6 +202,12 @@ class JobsController < ApplicationController
     redirect_to tango_status_course_jobs_path
   end
 
+  action_auth_level :tango_prealloc, :instructor
+  def tango_prealloc
+    Thread.new { TangoClient.prealloc params[:image], params[:num] }
+    redirect_to tango_status_course_jobs_path
+  end
+
 protected
 
   # formatRawJob - Given a raw job from the server, creates a job

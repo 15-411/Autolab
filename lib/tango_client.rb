@@ -83,7 +83,7 @@ module TangoClient
   def self.prealloc(image, num, options = {})
     handle_exceptions do
       url = "/prealloc/#{api_key}/#{image}/#{num}/"
-      ClientObj.get(url, body: options)
+      ClientObj.post(url, body: options, timeout: 0)
     end
   end
 

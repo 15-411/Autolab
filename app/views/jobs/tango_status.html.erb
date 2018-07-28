@@ -100,7 +100,18 @@
 <%= form_tag "tango_scale" do %>
     <label>Low water mark: <input type="number" name="min" value="<%= @vm_scale_params[0] %>"></label>
     <label>Max pool size: <input type="number" name="max" value="<%= @vm_scale_params[1] %>"></label><br>
-    <input type="submit" value="Update">
+    <input type="submit" class="btn" value="Update scale params">
+<% end %>
+<%= form_tag "tango_prealloc" do %>
+    <p><label for="image_dropdown">Pool name:</label>
+    <select id="image_dropdown" name="image">
+        <% @vm_pool_list.each do |k, p| %>
+        <option value="<%= k %>.img"><%= k %></option>
+        <% end %>
+    </select></p>
+    <p><label for="num_instances">Number of instances:</label>
+    <input type="number" name="num" id="num_instances" value="<%= @vm_pool_list.values[0]["total"].length %>"></p>
+    <input type="submit" class="btn" value="Update number of instances in pool">
 <% end %>
 <h3>Autograding Images in Use</h3>
 <table class="navigatable prettyBorder sortable">

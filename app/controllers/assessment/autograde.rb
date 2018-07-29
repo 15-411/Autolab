@@ -64,9 +64,14 @@ module AssessmentAutograde
     @submission = @assessment.submissions.find(params[:submission_id])
     @effective_cud = @submission.course_user_datum
 
+    unless @cud.instructor? || @cud.id == @effective_cud.id
+      flash[:error] = "No submission found with that id!"
+      redirect_to([@course, @assessment, :submissions]) && return
+    end
+
     unless @assessment.has_autograder?
       # Not an error, this behavior was specified!
-      flash[:info] = "This submission is not autogradable"
+      flash[:info] = "This submission is not cancellable since it was not autograded."
       redirect_to([:history, @course, @assessment, cud_id: @effective_cud.id]) && return
     end
 

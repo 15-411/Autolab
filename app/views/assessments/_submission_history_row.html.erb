@@ -61,13 +61,17 @@
     <td class="smallText">
       <% if @assessment.has_autograder? and submission.version > 0 then %>
         <%= link_to '(Regrade)', [:regrade, @course, @assessment, submission_id: submission.id], method: :post %>
+        <%= link_to '(Cancel)', [:cancel, @course, @assessment, submission_id: submission.id], method: :post %>
       <% end %>
       <%= link_to '(Destroy)', [:destroyConfirm, @course, @assessment, submission] %>
       <%= link_to '(Edit)', [:edit, @course, @assessment, submission] %>
     </td>
 
-    <% if @cud.instructor? %>
-      <td style="color: red;"><%= submission.errors.full_messages.join("<br />") %></td>
-    <% end %>
+    <td style="color: red;"><%= submission.errors.full_messages.join("<br />") %></td>
+  <%# (Ratatouille voice) Anyone can cancel! %>
+  <% elsif @assessment.has_autograder? and submission.version > 0 then %>
+    <td class="smallText">
+      <%= link_to '(Cancel)', [:cancel, @course, @assessment, submission_id: submission.id], method: :post %>
+    </td>
   <% end %>
 </tr>

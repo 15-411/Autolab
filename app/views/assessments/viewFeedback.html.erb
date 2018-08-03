@@ -1,13 +1,20 @@
-<h2>Feedback for 
+<h2>Feedback for
 <%= "#{@assessment.display_name} - #{@score.problem.name}" %>
 (<%=@score.submission.course_user_datum.user.email %>)
 </h2>
-<pre>
+<pre id="feedback">
 <%= @score.feedback %>
 Score for this problem: <%= @score.score.to_f().round(1) %>
 
 Graded by: <%= if @score.grader && @score.grader.user then @score.grader.user.email end %>
 </pre>
+<%= javascript_include_tag "ansi_up" %>
+<script type="text/javascript">
+  var ansi_up = new AnsiUp;
+  ansi_up.escape_for_html = false;
+  var elt = document.getElementById("feedback")
+  elt.innerHTML = ansi_up.ansi_to_html(elt.innerHTML);
+</script>
 
 <!--
 Yes, feedback if per problem but we show all annotations for this submission anyway. While this is not semantically correct, it offers a better UX than we had before. If we just show annotations attached to this problem, then where would we show annotations not attached to a problem at all?
@@ -21,7 +28,7 @@ Yes, feedback if per problem but we show all annotations for this submission any
 <% @submission.annotations.each do |annotation| %>
   <li>
     <%= link_to annotation.as_text, [:view, @course, @assessment, @submission, header_position: annotation.position] %>
-    <% 
+    <%
       # if the submission is an archive, use filename in archive; otherwise, use submission filename
       filename = @files && annotation.position ? Archive.get_nth_filename(@files, annotation.position) : @submission.filename
     %>

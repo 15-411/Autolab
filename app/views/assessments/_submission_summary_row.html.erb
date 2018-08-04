@@ -123,13 +123,13 @@
   <% if @cud.instructor? then %>
       <% if @assessment.has_autograder? and submission.version > 0 then %>
         <%= link_to 'Regrade', [:regrade, @course, @assessment, submission_id: submission.id], {method: :post, class:"btn small"} %>
-        <%= link_to 'Cancel', [:cancel, @course, @assessment, submission_id: submission.id], {method: :post, :class=>"btn small"} %>
+        <%= link_to 'Cancel', [:cancelConfirm, @course, @assessment, submission], {:class=>"btn small"} %>
       <% end %>
       <%= link_to 'Destroy', [:destroyConfirm, @course, @assessment, submission], {:class=>"btn small"} %>
       <%= link_to 'Edit', [:edit, @course, @assessment, submission], {:class=>"btn small"} %>
   <%# Non-instructors should be able to cancel, too. %>
   <% elsif @assessment.has_autograder? and submission.version > 0 then %>
-    <%= link_to 'Cancel', [:cancel, @course, @assessment, submission_id: submission.id], {method: :post, :class=>"btn small"} %>
+    <%= link_to 'Cancel', [:cancelConfirm, @course, @assessment, submission], {:class=>"btn small"} %>
   <% end %>
 
   <% if @cud.instructor? %>

@@ -124,15 +124,14 @@
                :title=>"Rerun the autograder on this submission",
                :class=>"btn small regrade-override"} %>
           <%= link_to "<i class='material-icons'>cancel</i>".html_safe,
-              [:cancel, @course, @assessment, submission_id: submission.id],
-              { method: :post,
-               :title=>"Cancel this submission from running",
-               :class=>"btn small"} %>
+              [:cancelConfirm, @course, @assessment, submission],
+              { :title=>"Cancel this submission from running",
+                :class=>"btn small"} %>
         <% end %>
         <%= link_to "<i class='material-icons'>edit</i>".html_safe, [:edit, @course, @assessment, submission],
             {:title=>"Edit the grading properties of this submission",
               :class=>"btn small"} %>
-        <%= link_to "<i class='material-icons'>delete</i>".html_safe, destroyConfirm_course_assessment_submission_path(@course, @assessment, submission),
+        <%= link_to "<i class='material-icons'>delete</i>".html_safe, [:destroyConfirm, @course, @assessment, submission],
             {:title=>"Destroy this submission forever",
               :class=>"btn small"} %>
       </td>

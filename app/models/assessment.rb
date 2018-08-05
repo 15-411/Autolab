@@ -492,7 +492,7 @@ private
                  "writeup_filename" => "writeup",
                  "has_autograde" => nil,
                  "has_scoreboard" => nil,
-                 "grade_latest" => true }
+                 "grade_latest" => false }
   BACKWORDS_COMPATIBILITY = { "autograding_setup" => "autograder",
                               "scoreboard_setup" => "scoreboard" }
   def backwards_compatibility(props)

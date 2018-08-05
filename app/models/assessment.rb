@@ -387,7 +387,7 @@ private
     s
   end
 
-  GENERAL_SERIALIZABLE = Set.new %w(name display_name category_name description handin_filename handin_directory has_svn has_lang group_size max_grace_days handout writeup max_submissions disable_handins max_size version_threshold embedded_quiz)
+  GENERAL_SERIALIZABLE = Set.new %w(name display_name category_name description handin_filename handin_directory has_svn has_lang group_size max_grace_days handout writeup max_submissions disable_handins max_size version_threshold embedded_quiz grade_latest)
 
   def serialize_general
     Utilities.serializable attributes, GENERAL_SERIALIZABLE
@@ -491,7 +491,8 @@ private
                  "handout_filename" => "handout",
                  "writeup_filename" => "writeup",
                  "has_autograde" => nil,
-                 "has_scoreboard" => nil }
+                 "has_scoreboard" => nil,
+                 "grade_latest" => true }
   BACKWORDS_COMPATIBILITY = { "autograding_setup" => "autograder",
                               "scoreboard_setup" => "scoreboard" }
   def backwards_compatibility(props)

@@ -151,6 +151,13 @@ class Course < ActiveRecord::Base
     assessments.pluck("DISTINCT category_name").sort
   end
 
+  def assessment_grade_by_categories
+    # bool value corresponds to value of "grade_latest" attribute of assessment.
+    { true => "Grade latest submission",
+      false => "Grade max-scoring submission"
+    }
+  end
+
   def assessments_with_category(cat_name, isStudent = false)
     if isStudent
       assessments.where(category_name: cat_name).ordered.released

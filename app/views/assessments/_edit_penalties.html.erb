@@ -1,3 +1,12 @@
+<div class="input-field">
+  <%= f.label :grade_latest, { :class=>"control-label active" } %>
+  <%= f.collection_select :grade_latest,
+    @course.assessment_grade_by_categories.to_a, # Convert to "tuples"
+    ->(kvp) { kvp[0] },
+    ->(kvp) { kvp[1] },
+    :selected => @assessment.grade_latest %>
+</div>
+
 <%= f.text_field :max_submissions, help_text: "The maximum number of times a student can submit the assessment.  Set this to -1 to allow unlimited submissions.", placeholder: "E.g. 10" %>
 
 <%= f.text_field :max_grace_days, help_text: "Maximum number of grace days that a student can spend on this assessment. E.g., 2. If left blank, all of the remaining available course grace days can be spent on this assessment.", placeholder: "Leave blank for no grace day limit" %>

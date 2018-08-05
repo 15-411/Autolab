@@ -82,6 +82,24 @@ class AssessmentUserDatum < ActiveRecord::Base
     end
   end
 
+  def max_scoring_submission!(as_seen_by)
+    submissions = Submission.where(course_user_datum_id: course_user_datum_id,
+				   assessment_id: assessment_id,
+				   ignored: false)
+    best = nil
+    best_final_score = 0
+    for s in submissions do
+      final_score = s.final_score as_seen_by
+      if final_score && final_score >= best_final_score
+	best = s
+	best_final_score = final_score
+      end
+      best ||= s
+    end
+
+    best
+  end
+
   def submission_status
     if latest_submission
       :submitted
@@ -276,10 +294,19 @@ private
                   when NORMAL
                     if Time.now <= assessment.grading_deadline
                       nil
-                    elsif latest_submission
-                      latest_submission.final_score as_seen_by
-                    else
-                      0.0
+                    elsif assessment.grade_latest
+		      if latest_submission
+			latest_submission.final_score as_seen_by
+		      else
+			0.0
+		      end
+		    else
+		      max_submission = max_scoring_submission! as_seen_by
+		      if max_submission
+			max_submission.final_score as_seen_by
+		      else
+			0.0
+		      end
                     end
                   when ZEROED
                     0.0

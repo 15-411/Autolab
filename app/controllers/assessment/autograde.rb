@@ -200,7 +200,7 @@ module AssessmentAutograde
       e.backtrace.each { |line| COURSE_LOGGER.log(line) }
       return -3, nil
     end
-    
+
 		upload_file_list.each do |f|
 			if !Pathname.new(f["localFile"]).file?
         flash[:error] = "Error while uploading autograding files."
@@ -423,7 +423,7 @@ module AssessmentAutograde
     else
         [handin, makefile, autograde]
     end
-    
+
   end
 
   ##
@@ -500,7 +500,6 @@ module AssessmentAutograde
 			@assessment.problems.each do |p|
         submissions.each do |submission|
           score = submission.scores.find_or_initialize_by(problem_id: p.id)
-          next unless score.new_record? # don't overwrite scores
           score.score = 0
           score.feedback = feedback_str
           score.released = true

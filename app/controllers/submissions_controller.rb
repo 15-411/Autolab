@@ -5,7 +5,7 @@ require "prawn"
 class SubmissionsController < ApplicationController
   # inherited from ApplicationController
   before_action :set_assessment
-  before_action :set_submission, only: [:destroy, :destroyConfirm, :download, :edit, :listArchive, :update, :view]
+  before_action :set_submission, only: [:cancelConfirm, :destroy, :destroyConfirm, :download, :edit, :listArchive, :update, :view]
   before_action :get_submission_file, only: [:download, :listArchive, :view]
   rescue_from ActionView::MissingTemplate do |exception|
       redirect_to("/home/error_404")
@@ -114,6 +114,15 @@ class SubmissionsController < ApplicationController
   # this is good
   action_auth_level :destroyConfirm, :instructor
   def destroyConfirm
+  end
+
+  # this is also good
+  action_auth_level :cancelConfirm, :student
+  def cancelConfirm
+    if @cud.id != @submission.course_user_datum_id && !@cud.instructor?
+      flash[:error] = "You are not authorized to view this page."
+      redirect_to(course_assessment_submissions_path(@submission.course_user_datum.course, @submission.assessment)) && return
+    end
   end
 
   ##

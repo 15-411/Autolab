@@ -57,6 +57,29 @@ module AssessmentAutograde
   end
 
   #
+  # cancel - cancel the selected submission by the student or instructor.
+  #
+  # action_auth_level :cancel, :student
+  def cancel
+    @submission = @assessment.submissions.find(params[:submission_id])
+    @effective_cud = @submission.course_user_datum
+
+    unless @cud.instructor? || @cud.id == @effective_cud.id
+      flash[:error] = "No submission found with that id!"
+      redirect_to([@course, @assessment, :submissions]) && return
+    end
+
+    unless @assessment.has_autograder?
+      # Not an error, this behavior was specified!
+      flash[:info] = "This submission is not cancellable since it was not autograded."
+      redirect_to([:history, @course, @assessment, cud_id: @effective_cud.id]) && return
+    end
+
+    cancelSubmission(@course, @assessment, @submission)
+    redirect_to([:history, @course, @assessment, cud_id: @effective_cud.id]) && return
+  end
+
+  #
   # regradeBatch - regrade the selected submissions by the instructor
   #
   # action_auth_level :regradeBatch, :instructor
@@ -136,6 +159,32 @@ module AssessmentAutograde
     end
 
     redirect_to([@course, @assessment, :submissions]) && return
+  end
+
+  ##
+  # cancelSubmission - submits a cancel request to Tango under the output file
+  # corresponding to the submission.
+  # Returns the response of cancelJob.
+  def cancelSubmission(course, assessment, submission)
+    flash[:error] = "No cancellation request was submitted because the submission is blank" && return if submission.blank?
+    output_file = get_output_file(assessment, submission)
+    status, json_response = tango_cancel(course, assessment, output_file)
+    if status != 0
+      flash[:error] = "Cancellation request failed."
+    else
+      result = json_response['statusId']
+      if result == -1
+        flash[:error] = "Authentication failed."
+      elsif result == -2
+        flash[:error] = "No cancellation request was submitted because no corresponding job was found."
+      elsif result == -3
+        flash[:error] = "No cancellation request was submitted because the job has already finished running."
+      elsif result != 0
+        flash[:error] = "Unknown error in cancellation. Please contact the instructors."
+      else
+        flash[:success] = "Submission cancellation completed successfully."
+      end
+    end
   end
 
   ##
@@ -302,6 +351,20 @@ module AssessmentAutograde
       response = TangoClient.addjob("#{course.name}-#{assessment.name}", job_properties)
     rescue TangoClient::TangoException => e
       flash[:error] = "Error while adding job to the queue: #{e.message}"
+      return -9, nil
+    end
+    [0, response]
+  end
+
+  ##
+  # Makes the Tango cancel request.
+  # Returns 0 on success, and -9 on failure.
+  #
+  def tango_cancel(course, assessment, output_file)
+    begin
+      response = TangoClient.cancel("#{course.name}-#{assessment.name}", output_file)
+    rescue TangoClient::TangoException => e
+      flash[:error] = "Error while cancelling job: #{e.message}"
       return -9, nil
     end
     [0, response]

@@ -62,6 +62,7 @@ Autolab3::Application.routes.draw do
         resources :scores, only: [:create, :show, :update]
 
         member do
+          get "cancelConfirm"
           get "destroyConfirm"
           get "download"
           get "listArchive", as: :list_archive
@@ -95,6 +96,7 @@ Autolab3::Application.routes.draw do
 
         # autograde actions
         post "autograde_done"
+        post "cancel"
         post "regrade"
         post "regradeBatch"
         post "regradeAll"

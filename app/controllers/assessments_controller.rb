@@ -51,6 +51,7 @@ class AssessmentsController < ApplicationController
 
   # Autograde
   action_no_auth :autograde_done
+  action_auth_level :cancel, :student
   action_auth_level :regrade, :instructor
   action_auth_level :regradeAll, :instructor
   action_no_auth :log_submit

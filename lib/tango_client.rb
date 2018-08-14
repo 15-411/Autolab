@@ -27,6 +27,19 @@ module TangoClient
     raise TangoException, "Unexpected error with Tango (#{e})."
   end
 
+  # Why does handle_exceptions throw an exception????? Ever????
+  # handle_exceptions throws an exception when the returned statusId is negative,
+  # which is weird because the caller seems to expect negative statusIds to
+  # be successfully returned. Anyway, I'll fix that.
+  def self.handle_exceptions_allowing_negative_statusId
+    resp = yield
+    return resp
+  rescue Net::OpenTimeout, Net::ReadTimeout
+    raise TangoException, "Connection timed out with Tango."
+  rescue StandardError => e
+    raise TangoException, "Unexpected error with Tango (#{e})."
+  end
+
   def self.open(courselab)
     resp = handle_exceptions do
       url = "/open/#{api_key}/#{courselab}/"
@@ -46,6 +59,13 @@ module TangoClient
     handle_exceptions do
       url = "/addJob/#{api_key}/#{courselab}/"
       ClientObj.post(url, body: options)
+    end
+  end
+
+  def self.cancel(courselab, output_file)
+    handle_exceptions_allowing_negative_statusId do
+      url = "/cancel/#{api_key}/#{courselab}/#{output_file}/"
+      ClientObj.post(url)
     end
   end
 

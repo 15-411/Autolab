@@ -165,14 +165,19 @@ class AssessmentsController < ApplicationController
   end
 
   # importAssessment - Imports an existing assessment from local file.
-  # The main task of this function is to decide what category a newly
-  # installed assessment should be assigned to.
   action_auth_level :importAssessment, :instructor
   def importAssessment
     @assessment = @course.assessments.new(name: params[:assessment_name])
     @assessment.load_yaml # this will save the assessment
     @assessment.construct_folder # make sure there's a handin folder, just in case
     @assessment.load_config_file # only call this on saved assessments
+    if @assessment.embedded_quiz
+      course_root = Rails.root.join("courses", @course.name)
+      File.open(File.join(File.join(course_root, params[:assessment_name]), "embedded_form.html"), "r") do |f|
+        @assessment.embedded_quiz_form_data = f.read
+        @assessment.save!
+      end
+    end
     redirect_to([@course, @assessment])
   end
 
@@ -354,6 +359,11 @@ class AssessmentsController < ApplicationController
             tar.add_file relative_path, mode do |tarFile|
               File.open(file, "rb") { |f| tarFile.write f.read }
             end
+          end
+        end
+        if @assessment.embedded_quiz
+          tar.add_file File.join(asmt_dir, "embedded_form.html"), 0664 do |tarFile|
+            tarFile.write @assessment.embedded_quiz_form_data
           end
         end
       end

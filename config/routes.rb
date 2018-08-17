@@ -82,6 +82,7 @@ Autolab3::Application.routes.draw do
         get "releaseAllGrades"
         get "releaseSectionGrades"
         get "viewFeedback"
+        get "viewStreamingFeedback"
         get "reload"
         get "statistics"
         get "withdrawAllGrades"

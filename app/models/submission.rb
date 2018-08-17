@@ -275,7 +275,7 @@ class Submission < ActiveRecord::Base
 
   # NOTE: threshold  is no longer calculated using submission version,
   # but now using the number of submissions. This way, deleted submissions will
-  # not be accounted for in the version penalty. 
+  # not be accounted for in the version penalty.
   def version_over_threshold_by
     # version threshold of -1 allows infinite submissions without penalty
     return 0 if assessment.effective_version_threshold < 0

@@ -220,6 +220,12 @@ module AssessmentAutograde
 		elsif job < 0
       flash[:error] = "Autograding failed because of an unexpected exception in the system."
     else
+      ActiveRecord::Base.transaction do
+        submissions.each do |submission|
+          submission.in_progress = true
+          submission.save!
+        end
+      end
       link = "<a href=\"#{url_for(controller: 'jobs', action: 'getjob', id: job)}\">Job ID = #{job}</a>"
       flash[:success] = ("Submitted file #{submissions[0].filename} (#{link}) for autograding." \
         " Refresh the page to see the results.").html_safe
@@ -553,6 +559,7 @@ module AssessmentAutograde
         submissions.each do |submission|
           submission.autoresult = autoresult
           submission.dave = nil
+          submission.in_progress = false
           submission.save!
         end
       end
@@ -560,7 +567,7 @@ module AssessmentAutograde
       feedback_str = "An error occurred while parsing the autoresult returned by the Autograder.\n
         \nError message: #{e}\n\n"
       feedback_str += lines.join if lines && (lines.length < 10_000)
-			@assessment.problems.each do |p|
+	  @assessment.problems.each do |p|
         submissions.each do |submission|
           score = submission.scores.find_or_initialize_by(problem_id: p.id)
           score.score = 0
@@ -568,6 +575,13 @@ module AssessmentAutograde
           score.released = true
           score.grader_id = 0
           score.save!
+        end
+      end
+      ActiveRecord::Base.transaction do
+        submissions.each do |submission|
+          submission.dave = nil
+          submission.in_progress = false
+          submission.save!
         end
       end
     end

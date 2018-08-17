@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170101140555) do
+ActiveRecord::Schema.define(version: 20180817214729) do
 
   create_table "annotations", force: :cascade do |t|
     t.integer  "submission_id", limit: 4
@@ -97,6 +97,7 @@ ActiveRecord::Schema.define(version: 20170101140555) do
     t.text     "embedded_quiz_form_data", limit: 65535
     t.boolean  "embedded_quiz",           limit: 1
     t.binary   "embedded_quiz_form"
+    t.boolean  "grade_latest",            limit: 1,     default: false
   end
 
   create_table "attachments", force: :cascade do |t|
@@ -248,6 +249,7 @@ ActiveRecord::Schema.define(version: 20170101140555) do
     t.string   "dave",                      limit: 255
     t.text     "settings",                  limit: 65535
     t.text     "embedded_quiz_form_answer", limit: 65535
+    t.boolean  "in_progress",                             default: false
   end
 
   add_index "submissions", ["assessment_id"], name: "index_submissions_on_assessment_id"

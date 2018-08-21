@@ -69,9 +69,9 @@ module TangoClient
     end
   end
 
-  def self.poll(courselab, output_file)
+  def self.poll(courselab, output_file, in_progress = 0)
     handle_exceptions do
-      url = "/poll/#{api_key}/#{courselab}/#{output_file}"
+      url = "/poll/#{api_key}/#{courselab}/#{output_file}/?inprogress=#{in_progress}"
       ClientObj.get(url)
     end
   end

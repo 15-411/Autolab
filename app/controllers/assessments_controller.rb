@@ -527,6 +527,16 @@ class AssessmentsController < ApplicationController
   action_auth_level :viewStreamingFeedback, :student
   def viewStreamingFeedback
     redirect_to(action: "viewFeedback", feedback: params[:feedback], submission_id: params[:submission_id]) && return unless @submission.in_progress
+    output_file = "#{@submission.course_user_datum.email}_#{@submission.version}_#{@assessment.name}_autograde.txt"
+    response = TangoClient.poll("#{@course.name}-#{@assessment.name}", "#{URI.encode(output_file)}", in_progress = 1)
+    # json is returned when a job is not complete
+    if response.content_type == "application/json"
+      @feedback = "Output file not found. Please try again later."
+    else
+      @feedback = response.body
+    end
+  rescue TangoClient::TangoException => e
+    @feedback = "Output file not found. Please try again later."
   end
 
   action_auth_level :reload, :instructor

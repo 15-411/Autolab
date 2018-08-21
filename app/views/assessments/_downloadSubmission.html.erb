@@ -21,7 +21,7 @@
       <% end %>
     <% end %>
     <% if sub.in_progress then %>
-        <%= link_to ("output (in progress)"), { action: :viewFeedback,
+        <%= link_to ("output (in progress)"), { action: :viewStreamingFeedback,
           submission_id: sub.id,
           feedback: problem.id}, title: "In-progress autograder output" %>
     <% elsif @scores[sub.id] and @scores[sub.id][problem.id] and @scores[sub.id][problem.id][:released] == 1 then

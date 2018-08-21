@@ -97,7 +97,6 @@ ActiveRecord::Schema.define(version: 20180817214729) do
     t.text     "embedded_quiz_form_data", limit: 65535
     t.boolean  "embedded_quiz",           limit: 1
     t.binary   "embedded_quiz_form"
-    t.boolean  "grade_latest",            limit: 1,     default: false
   end
 
   create_table "attachments", force: :cascade do |t|

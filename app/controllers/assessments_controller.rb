@@ -531,12 +531,12 @@ class AssessmentsController < ApplicationController
     response = TangoClient.poll("#{@course.name}-#{@assessment.name}", "#{URI.encode(output_file)}", in_progress = 1)
     # json is returned when a job is not complete
     if response.content_type == "application/json"
-      @feedback = "Output file not found. Please try again later."
+      @feedback = "Output file not found. The job may not have started yet; see the Jobs page or try again later."
     else
       @feedback = response.body
     end
   rescue TangoClient::TangoException => e
-    @feedback = "Output file not found. Please try again later."
+    @feedback = "Output file not found. The job may not have started yet; see the Jobs page or try again later."
   end
 
   action_auth_level :reload, :instructor

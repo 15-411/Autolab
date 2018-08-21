@@ -516,8 +516,11 @@ class AssessmentsController < ApplicationController
     # User requested to view feedback on a score
     @score = @submission.scores.find_by(problem_id: params[:feedback])
 
-    redirect_to(action: "viewStreamingFeedback", feedback: params[:feedback], submission_id: params[:submission_id]) && return if @submission.in_progress
-    redirect_to(action: "index") && return unless @score
+    if @submission.in_progress and not @score
+      redirect_to(action: "viewStreamingFeedback", feedback: params[:feedback], submission_id: params[:submission_id]) && return
+    elsif not @score
+      redirect_to(action: "index")
+    end
 
     if Archive.archive? @submission.handin_file_path
       @files = Archive.get_files @submission.handin_file_path

@@ -1,0 +1,13 @@
+<h2>In-Progress Feedback for
+<%= @assessment.display_name %>
+</h2>
+<pre id="feedback">
+<%= @feedback %>
+</pre>
+<%= javascript_include_tag "ansi_up" %>
+<script type="text/javascript">
+  var ansi_up = new AnsiUp;
+  ansi_up.escape_for_html = false;
+  var elt = document.getElementById("feedback")
+  elt.innerHTML = ansi_up.ansi_to_html(elt.innerHTML);
+</script>

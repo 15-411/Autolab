@@ -20,16 +20,17 @@
         <span><i class="material-icons">zoom_in</i></span>
       <% end %>
     <% end %>
-
-    <% if @scores[sub.id] and @scores[sub.id][problem.id] and @scores[sub.id][problem.id][:released] == 1 then
+    <% if sub.in_progress then %>
+        <%= link_to ("output (in progress)"), { action: :viewStreamingFeedback,
+          submission_id: sub.id,
+          feedback: problem.id}, title: "In-progress autograder output" %>
+    <% elsif @scores[sub.id] and @scores[sub.id][problem.id] and @scores[sub.id][problem.id][:released] == 1 then
       score = @scores[sub.id][problem.id]
       if score[:feedback] then %>
         <%= link_to ("output"), { action: :viewFeedback,
           submission_id: sub.id,
           feedback: problem.id}, title: "Autograding output file" %>
       <% end %>
-    <% else %>
-      <%= link_to "status", [@course, :jobs], title: "View a history of autograding jobs" %>
     <% end %>
 
   <% else %>

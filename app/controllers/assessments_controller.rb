@@ -28,7 +28,7 @@ class AssessmentsController < ApplicationController
   before_action :set_assessment, except: [:index, :new, :create, :installAssessment,
                                           :importAsmtFromTar, :importAssessment,
                                           :log_submit, :local_submit, :autograde_done]
-  before_action :set_submission, only: [:viewFeedback]
+  before_action :set_submission, only: [:viewFeedback, :viewStreamingFeedback]
 
   # We have to do this here, because the modules don't inherit ApplicationController.
 
@@ -516,11 +516,27 @@ class AssessmentsController < ApplicationController
     # User requested to view feedback on a score
     @score = @submission.scores.find_by(problem_id: params[:feedback])
 
+    redirect_to(action: "viewStreamingFeedback", feedback: params[:feedback], submission_id: params[:submission_id]) && return if @submission.in_progress
     redirect_to(action: "index") && return unless @score
 
     if Archive.archive? @submission.handin_file_path
       @files = Archive.get_files @submission.handin_file_path
     end
+  end
+
+  action_auth_level :viewStreamingFeedback, :student
+  def viewStreamingFeedback
+    redirect_to(action: "viewFeedback", feedback: params[:feedback], submission_id: params[:submission_id]) && return unless @submission.in_progress
+    output_file = "#{@submission.course_user_datum.email}_#{@submission.version}_#{@assessment.name}_autograde.txt"
+    response = TangoClient.poll("#{@course.name}-#{@assessment.name}", "#{URI.encode(output_file)}", in_progress = 1)
+    # json is returned when a job is not complete
+    if response.content_type == "application/json"
+      @feedback = "Output file not found. The job may not have started yet; see the Jobs page or try again later."
+    else
+      @feedback = response.body
+    end
+  rescue TangoClient::TangoException => e
+    @feedback = "Output file not found. The job may not have started yet; see the Jobs page or try again later."
   end
 
   action_auth_level :reload, :instructor

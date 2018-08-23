@@ -414,6 +414,7 @@ private
     self.due_at = self.end_at = self.visible_at = self.start_at = self.grading_deadline = Time.now
     self.quiz = false
     self.quizData = ""
+    self.grade_latest = true
     update!(s["general"])
     Problem.deserialize_list(self, s["problems"]) if s["problems"]
     if s["autograder"]
@@ -508,8 +509,7 @@ private
                  "handout_filename" => "handout",
                  "writeup_filename" => "writeup",
                  "has_autograde" => nil,
-                 "has_scoreboard" => nil,
-                 "grade_latest" => false }
+                 "has_scoreboard" => nil }
   BACKWORDS_COMPATIBILITY = { "autograding_setup" => "autograder",
                               "scoreboard_setup" => "scoreboard" }
   def backwards_compatibility(props)

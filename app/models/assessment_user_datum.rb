@@ -72,14 +72,38 @@ class AssessmentUserDatum < ActiveRecord::Base
 
   # Calculate latest unignored submission (i.e. with max version and unignored)
   def latest_submission!
-    if (max_version = Submission.where(assessment_id: assessment_id,
-                                       course_user_datum_id: course_user_datum_id,
-                                       ignored: false).maximum(:version))
-      Submission.find_by(version: max_version, assessment_id: assessment_id,
-                         course_user_datum_id: course_user_datum_id)
+    if assessment.grade_latest
+      if (max_version = Submission.where(assessment_id: assessment_id,
+                                         course_user_datum_id: course_user_datum_id,
+                                         ignored: false).maximum(:version))
+        Submission.find_by(version: max_version, assessment_id: assessment_id,
+                           course_user_datum_id: course_user_datum_id)
+      else
+        nil
+      end
     else
-      nil
+      instructor = CourseUserDatum.new
+      instructor.instructor = true
+      max_scoring_submission(instructor)
     end
+  end
+
+  def max_scoring_submission!(as_seen_by)
+    submissions = Submission.where(course_user_datum_id: course_user_datum_id,
+				   assessment_id: assessment_id,
+				   ignored: false)
+    best = nil
+    best_final_score = 0
+    for s in submissions do
+      final_score = s.final_score as_seen_by
+      if final_score && final_score >= best_final_score
+	best = s
+	best_final_score = final_score
+      end
+      best ||= s
+    end
+
+    best
   end
 
   def submission_status

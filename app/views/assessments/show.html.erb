@@ -141,9 +141,11 @@
         </p>
 
         <p class="valign-wrapper">
-          <i class="valign material-icons">today</i>&nbsp;&nbsp;Last day to handin:&nbsp;&nbsp;<b><span class="moment-date-time" data-format="MMMM Do YYYY, h:mm a"> <%= end_at_display(@aud.end_at false) %></span></b>
+          <i class="valign material-icons">today</i>&nbsp;&nbsp;Last day to hand in:&nbsp;&nbsp;<b><span class="moment-date-time" data-format="MMMM Do YYYY, h:mm a"> <%= end_at_display(@aud.end_at false) %></span></b>
 
         </p>
+	<p class="valign-wrapper"><i class="material-icons valign">school</i>&nbsp;&nbsp;Grading strategy:&nbsp;&nbsp;<b>
+   <%= @assessment.grade_latest ? "Latest submission" : "Maximum-scoring submission" %></b></p>
 
         <% if @cud.instructor? and @assessment.exam? %>
         <p class="attention">This is an exam. While it is in progress, please check Admin > Edit Course > Exam In Progress.</p>

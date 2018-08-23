@@ -362,7 +362,24 @@ private
   #
   # NOTE: Must be kept in sync with AUD.latest_submission!
   def calculate_latest_submissions
-    submissions.group(:course_user_datum_id).having("MAX(submissions.version)")
+    if grade_latest
+      submissions.group(:course_user_datum_id).having("MAX(submissions.version)")
+    else
+      best = {}
+      for s in submissions
+        key = s.course_user_datum_id
+        best[key] = best[key] ? max_scoring(best[key], s) : s
+      end
+      best.values
+    end
+  end
+
+  def max_scoring(s1, s2)
+    instructor = CourseUserDatum.new
+    instructor.instructor = true
+    score1 = s1.final_score instructor
+    score2 = s2.final_score instructor
+    score1 >= score2 ? s1 : s2
   end
 
   def invalidate_course_cgdubs
@@ -387,7 +404,7 @@ private
     s
   end
 
-  GENERAL_SERIALIZABLE = Set.new %w(name display_name category_name description handin_filename handin_directory has_svn has_lang group_size max_grace_days handout writeup max_submissions disable_handins max_size version_threshold embedded_quiz)
+  GENERAL_SERIALIZABLE = Set.new %w(name display_name category_name description handin_filename handin_directory has_svn has_lang group_size max_grace_days handout writeup max_submissions disable_handins max_size version_threshold embedded_quiz grade_latest)
 
   def serialize_general
     Utilities.serializable attributes, GENERAL_SERIALIZABLE
@@ -397,6 +414,7 @@ private
     self.due_at = self.end_at = self.visible_at = self.start_at = self.grading_deadline = Time.now
     self.quiz = false
     self.quizData = ""
+    self.grade_latest = true
     update!(s["general"])
     Problem.deserialize_list(self, s["problems"]) if s["problems"]
     if s["autograder"]

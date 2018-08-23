@@ -28,7 +28,7 @@
 <div class="row">
   <div class="col s12">
     <ul id="tabs" class="tabs tabs-fixed-width">
-    <% [ "basic", "handin", "penalties", "problems" ].each do |tab_name| %>
+    <% [ "basic", "handin", "grading", "problems" ].each do |tab_name| %>
       <%= (tab_name == params[:active_tab]) ? tag(:li, {:class => "active tab"}) : tag(:li, class: :tab) %>
         <%= link_to tab_name.titleize, "#tab_#{tab_name}" %>
       </li>
@@ -61,8 +61,8 @@
       <div id="tab_handin">
         <%= render "edit_handin", f: f %>
       </div>
-      <div id="tab_penalties">
-        <%= render "edit_penalties", f: f %>
+      <div id="tab_grading">
+        <%= render "edit_grading", f: f %>
       </div>
       <div id="tab_problems">
         <%= render "edit_problems", f: f %>

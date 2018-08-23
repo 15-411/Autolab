@@ -108,7 +108,7 @@ environment_setup() {
     if [[ -d "$AUTOLAB_PATH" ]]; then
         confirm "Directoy ~/Autolab already exists... Do you want to overwrite it?" && rm -rf ~/Autolab
         fi
-    git clone https://github.com/autolab/Autolab.git ~/Autolab
+    git clone https://github.com/CMU-15-411-F18/Autolab.git ~/Autolab
 }
 
 ## Section Two: Set up Rbenv and ruby-build plugin

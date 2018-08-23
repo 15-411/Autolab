@@ -577,7 +577,9 @@ class AssessmentsController < ApplicationController
 
 
     begin
+      grading_mode_updated = @assessment.grade_latest != edit_assessment_params[:grade_latest]
       flash[:success] = "Saved!" if @assessment.update!(edit_assessment_params)
+      @assessment.update_latest_submissions_modulo_callbacks if grading_mode_updated
 
       redirect_to(tab_index) && return
     rescue ActiveRecord::RecordInvalid => invalid

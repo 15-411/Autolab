@@ -362,7 +362,24 @@ private
   #
   # NOTE: Must be kept in sync with AUD.latest_submission!
   def calculate_latest_submissions
-    submissions.group(:course_user_datum_id).having("MAX(submissions.version)")
+    if grade_latest
+      submissions.group(:course_user_datum_id).having("MAX(submissions.version)")
+    else
+      best = {}
+      for s in submissions
+        key = s.course_user_datum_id
+        best[key] = best[key] ? max_scoring(best[key], s) : s
+      end
+      best.values
+    end
+  end
+
+  def max_scoring(s1, s2)
+    instructor = CourseUserDatum.new
+    instructor.instructor = true
+    score1 = s1.final_score instructor
+    score2 = s2.final_score instructor
+    score1 >= score2 ? s1 : s2
   end
 
   def invalidate_course_cgdubs

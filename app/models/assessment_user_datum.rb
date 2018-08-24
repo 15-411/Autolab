@@ -84,7 +84,7 @@ class AssessmentUserDatum < ActiveRecord::Base
     else
       instructor = CourseUserDatum.new
       instructor.instructor = true
-      max_scoring_submission(instructor)
+      max_scoring_submission!(instructor)
     end
   end
 

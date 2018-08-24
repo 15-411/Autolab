@@ -343,7 +343,7 @@ module AssessmentAutograde
   # Makes the Tango addJob request.
   # Returns 0 on success and -9 on failure.
   #
-  def tango_add_job(course, assessment, upload_file_list, callback_url, job_name, output_file)
+  def tango_add_job(course, assessment, upload_file_list, callback_url, job_name, limiting_key, output_file)
     job_properties = { "image" => @autograde_prop.autograde_image,
                        "files" => upload_file_list.map do |f|
                          { "localFile" => File.basename(f["localFile"]),
@@ -352,7 +352,8 @@ module AssessmentAutograde
                        "output_file" => output_file,
                        "timeout" => @autograde_prop.autograde_timeout,
                        "callback_url" => callback_url,
-                       "jobName" => job_name }.to_json
+                       "jobName" => job_name,
+                       "limitingKey" => limiting_key }.to_json
     begin
       response = TangoClient.addjob("#{course.name}-#{assessment.name}", job_properties)
     rescue TangoClient::TangoException => e
@@ -450,8 +451,15 @@ module AssessmentAutograde
     callback_url = get_callback_url(course, assessment, submissions[0], dave)
     job_name = get_job_name(course, assessment, submissions[0])
 
+    limiting_key = "cud-" + submissions[0].course_user_datum.id.to_s
+    aud = assessment.aud_for submissions[0].course_user_datum.id
+    group = aud.group
+    unless group.nil?
+      limiting_key = "group-" + group.id.to_s
+    end
+
     status, response_json = tango_add_job(course, assessment, upload_file_list,
-                                          callback_url, job_name, output_file)
+                                          callback_url, job_name, limiting_key, output_file)
     return status if status < 0
 
     # If autolab user opts not to use a callback URL, we poll the job for 80 seconds

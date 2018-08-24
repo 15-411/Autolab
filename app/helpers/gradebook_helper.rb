@@ -43,6 +43,10 @@ module GradebookHelper
                  sortable: true, width: 100, cssClass: "computed course_average",
                  headerCssClass: "course_average" }
 
+    columns << { id: "grace_days", name: "Grace Days", field: "grace_days",
+                 sortable: true, width: 100, cssClass: "grace_days",
+                 headerCssClass: "grace_days" }
+
     columns << { id: "email_right", name: "Email", field: "email",
                  sortable: true, width: 100, cssClass: "email right",
                  headerCssClass: "email right" }

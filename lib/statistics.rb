@@ -63,10 +63,18 @@ class Statistics
     result.round(1)
   end
 
+  def num_submissions(a)
+    if a.nil? || a.empty?
+      "--"
+    else
+      a.size
+    end
+  end
+
   def stats(pop)
     pop = pop.compact
     result = {}
-    [:median, :min, :max, :mean, :stddev].each do |stat|
+    [:median, :min, :max, :mean, :stddev, :num_submissions].each do |stat|
       result[stat] = send(stat, pop)
     end
     result

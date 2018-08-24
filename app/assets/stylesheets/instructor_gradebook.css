@@ -126,6 +126,7 @@
   text-align: center;
 }
 
+#gradebook .slick-cell.grace_days,
 #gradebook .slick-cell.course_average {
   background: #f3f3f3;
   font-weight: bold;

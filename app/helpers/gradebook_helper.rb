@@ -85,6 +85,9 @@ module GradebookHelper
         row["#{a.name}_submission_status"] = cell["submission_status"]
         row["#{a.name}_grade_type"] = cell["grade_type"]
         row["#{a.name}_end_at"] = cell["end_at"]
+
+        aud = a.aud_for cud
+        row["grace_days"] = aud.grace_days_used
       end
 
       course.assessment_categories.each do |cat|

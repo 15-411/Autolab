@@ -2,7 +2,6 @@ require "association_cache"
 require "csv"
 require "statistics"
 require "utilities"
-require "assessment_user_datum"
 
 class GradebooksController < ApplicationController
     rescue_from ActionView::MissingTemplate do |exception|
@@ -78,7 +77,7 @@ class GradebooksController < ApplicationController
   def statistics
     matrix = GradeMatrix.new @course, @cud
     cols = {}
-    grace_days = 0
+    grace_days = Array.new 
 
     # extract assessment final scores
     @course.assessments.each do |asmt|
@@ -87,9 +86,9 @@ class GradebooksController < ApplicationController
       cells = matrix.cells_for_assessment asmt.id
       final_scores = cells.map { |c| c["final_score"] }
       cols[asmt.name] = final_scores
-      grace_days += asmt.grace_days_used
+      aud = asmt.aud_for @cud
+      grace_days.push aud.grace_days_used
     end
-    cols["Grace Days"] = grace_days
 
     # category averages
     @course.assessment_categories.each do |cat|
@@ -100,6 +99,9 @@ class GradebooksController < ApplicationController
 
     # course averages
     cols["Course Average"] = matrix.course_averages
+  
+    # grace days
+    cols["Grace Days Used"] = grace_days
 
     # calculate statistics
     @course_stats = {}

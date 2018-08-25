@@ -86,6 +86,7 @@ class GradebooksController < ApplicationController
       cells = matrix.cells_for_assessment asmt.id
       final_scores = cells.map { |c| c["final_score"] }
       cols[asmt.name] = final_scores
+
       aud = asmt.aud_for @cud
       grace_days.push aud.grace_days_used
     end

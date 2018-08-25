@@ -65,9 +65,9 @@ class Statistics
 
   def num_submissions(a)
     if a.nil? || a.empty?
-      "--"
+      return "--"
     else
-      a.size
+      return a.size
     end
   end
 

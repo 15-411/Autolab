@@ -78,6 +78,7 @@
           <col class="gdu"></col>
           <col class="gdu"></col>
           <col class="gdu"></col>
+          <col class="gdu"></col>
         </colgroup>
         <thead>
           <tr class="header">
@@ -87,6 +88,7 @@
             <th>Std. Dev.</th>
             <th>Min</th>
             <th>Max</th>
+            <th>Num Submissions</th>
           </tr>
         </thead>
         <tbody>
@@ -103,6 +105,7 @@
             <td><%= stats[:stddev] %></td>
             <td><%= stats[:min] %></td>
             <td><%= stats[:max] %></td>
+            <td><%= stats[:num_submissions] %></td>
           </tr>
         <% end %>
         </tbody>

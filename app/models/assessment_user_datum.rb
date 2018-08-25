@@ -106,6 +106,13 @@ class AssessmentUserDatum < ActiveRecord::Base
     best
   end
 
+  def num_submissions!
+    submissions = Submission.where(course_user_datum_id: course_user_datum_id,
+				   assessment_id: assessment_id,
+				   ignored: false)
+    submissions.size
+  end
+
   def submission_status
     if latest_submission
       :submitted

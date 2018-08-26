@@ -426,17 +426,29 @@ private
     end
     problem_scores
   end
-  
-# Stats for grouping
+
+  def total_num_submissions(grouping, group, cache)
+    total = 0
+    grouping[group].each do |s|
+      aud = s.assessment.aud_for s.course_user_datum
+      n = cache[s.course_user_datum] || aud.num_submissions!
+      cache[s.course_user_datum] = n
+      total += n
+    end
+    total
+  end
+
+  # Stats for grouping
   def stats_for_grouping(grouping)
     result = {}
+    cache = {}
     problem_id_to_name = @assessment.problem_id_to_name
     stats = Statistics.new
     # There can be null keys here because some of the
     # values we group by are nullable in the DB. We
     # shouldn't show those.
     grouping.keys.compact.sort.each do |group|
-      problem_scores = problem_scores_for_group(grouping,group)
+      problem_scores = problem_scores_for_group(grouping, group)
       # Need the problems to be in the right order.
       problem_stats = {}
       # seems like we always index with 1
@@ -444,6 +456,7 @@ private
         problem_stats[problem.name] =  stats.stats(problem_scores[problem.id])
       end
       problem_stats[:Total] = stats.stats(problem_scores[:total])
+      problem_stats[:Total][:num_submissions] = total_num_submissions(grouping, group, cache)
       result[group] = {}
       result[group][:data] = problem_stats
       result[group][:total_students] =problem_scores[ problem_scores.keys[1]].length

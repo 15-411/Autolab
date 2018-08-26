@@ -77,7 +77,7 @@ class GradebooksController < ApplicationController
   def statistics
     matrix = GradeMatrix.new @course, @cud
     cols = {}
-    grace_days = Array.new 
+    num_submissions = {}
 
     # extract assessment final scores
     @course.assessments.each do |asmt|
@@ -86,9 +86,7 @@ class GradebooksController < ApplicationController
       cells = matrix.cells_for_assessment asmt.id
       final_scores = cells.map { |c| c["final_score"] }
       cols[asmt.name] = final_scores
-
-      aud = asmt.aud_for @cud
-      grace_days.push aud.grace_days_used
+      num_submissions[asmt.name] = matrix.num_submissions_for_assessment asmt.id
     end
 
     # category averages
@@ -100,15 +98,13 @@ class GradebooksController < ApplicationController
 
     # course averages
     cols["Course Average"] = matrix.course_averages
-  
-    # grace days
-    cols["Grace Days Used"] = grace_days
 
     # calculate statistics
     @course_stats = {}
     stat = Statistics.new
     cols.each do |key, value|
       @course_stats[key] = stat.stats(value)
+      @course_stats[key][:num_submissions] = num_submissions[key]
     end
   end
 

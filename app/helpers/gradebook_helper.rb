@@ -43,9 +43,13 @@ module GradebookHelper
                  sortable: true, width: 100, cssClass: "computed course_average",
                  headerCssClass: "course_average" }
 
-    columns << { id: "grace_days", name: "Grace Days", field: "grace_days",
+    columns << { id: "grace_days", name: "Grace Days Used", field: "grace_days",
                  sortable: true, width: 100, cssClass: "grace_days",
                  headerCssClass: "grace_days" }
+
+    columns << { id: "num_submissions", name: "Number Submissions", field: "num_submissions",
+                 sortable: true, width: 100, cssClass: "num_submissions",
+                 headerCssClass: "num_submissions" }
 
     columns << { id: "email_right", name: "Email", field: "email",
                  sortable: true, width: 100, cssClass: "email right",
@@ -77,6 +81,8 @@ module GradebookHelper
       row["section"] = cud.section
 
       # TODO: formalize score render stack, consolidate with computed score
+      total_grace_days = 0
+      total_num_submissions = 0
       course.assessments.ordered.each do |a|
         next unless matrix.has_assessment? a.id
 
@@ -87,8 +93,11 @@ module GradebookHelper
         row["#{a.name}_end_at"] = cell["end_at"]
 
         aud = a.aud_for cud
-        row["grace_days"] = aud.grace_days_used
+        total_grace_days += aud.grace_days_used
+        total_num_submissions += aud.num_submissions!
       end
+      row["num_submissions"] = total_num_submissions
+      row["grace_days"] = total_grace_days
 
       course.assessment_categories.each do |cat|
         next unless matrix.has_category? cat

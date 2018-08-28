@@ -10,6 +10,7 @@ module AssessmentHelper
            <th>StdDev</th>
            <th>Max</th>
            <th>Min</th>
+           <th>Num Submissions</th>
          </tr>
        </thead>
        <tbody>'
@@ -21,6 +22,7 @@ module AssessmentHelper
       out += "<td>#{stats[:stddev]}</td>"
       out += "<td>#{stats[:max]}</td>"
       out += "<td>#{stats[:min]}</td>"
+      out += "<td>#{stats[:num_submissions]}</td>"
       out += "</tr>"
     end
     out +=

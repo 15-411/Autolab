@@ -66,6 +66,7 @@ class Statistics
   def stats(pop)
     pop = pop.compact
     result = {}
+    result[:num_submissions] = "--"
     [:median, :min, :max, :mean, :stddev].each do |stat|
       result[stat] = send(stat, pop)
     end

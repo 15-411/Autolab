@@ -38,6 +38,7 @@ class CoursesController < ApplicationController
   def manage
     matrix = GradeMatrix.new @course, @cud
     cols = {}
+    num_submissions = {}
 
     # extract assessment final scores
     @course.assessments.each do |asmt|
@@ -45,7 +46,9 @@ class CoursesController < ApplicationController
 
       cells = matrix.cells_for_assessment asmt.id
       final_scores = cells.map { |c| c["final_score"] }
+      n = matrix.num_submissions_for_assessment asmt.id
       cols[asmt.name] = final_scores
+      num_submissions[asmt.name] = n
     end
 
     # category averages
@@ -63,6 +66,7 @@ class CoursesController < ApplicationController
     stat = Statistics.new
     cols.each do |key, value|
       @course_stats[key] = stat.stats(value)
+      @course_stats[key][:num_submissions] = num_submissions[key]
     end
   end
 

@@ -53,6 +53,14 @@ class GradeMatrix
     @matrix["course_avg_by_user"].values
   end
 
+  def num_submissions_by_user(asmt_id, cud_id)
+    @matrix["num_submissions_by_user"]["#{asmt_id}"]["#{cud_id}"]
+  end
+
+  def num_submissions_for_assessment(asmt_id)
+    @matrix["num_submissions_by_user"]["#{asmt_id}"].values.inject(:+)
+  end
+
   # Check whether the specified assessment is included in the GradeMatrix cache
   # This is necessary when clients are using a cached GradeMatrix that might not
   # be up to date with the current course (e.g.: an assessment was added since)
@@ -85,6 +93,7 @@ private
     cat_avg_by_cat = {}
     course_avg_by_user = {}
     asmt_before_grading_deadline = {}
+    num_submissions_by_user = {}
 
     @course.assessments.each do |a|
       asmt_before_grading_deadline["#{a.id}"] = a.before_grading_deadline?
@@ -98,6 +107,9 @@ private
         s = summarize a.aud_for(cud.id)
         cell_by_asmt["#{a.id}"] ||= {}
         cell_by_asmt["#{a.id}"]["#{cud.id}"] = s
+	aud = a.aud_for cud.id
+	num_submissions_by_user["#{a.id}"] ||= {}
+	num_submissions_by_user["#{a.id}"]["#{cud.id}"] = aud.num_submissions!
       end
 
       @course.assessment_categories.each do |cat|
@@ -114,6 +126,7 @@ private
       "cat_avg_by_cat" => cat_avg_by_cat,
       "course_avg_by_user" => course_avg_by_user,
       "asmt_before_grading_deadline" => asmt_before_grading_deadline,
+      "num_submissions_by_user" => num_submissions_by_user,
       "last_updated" => Time.now
     }
   end

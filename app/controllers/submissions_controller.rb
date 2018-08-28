@@ -383,7 +383,7 @@ class SubmissionsController < ApplicationController
       begin
         render(:view) && return
       rescue
-        flash[:error] = "Autolab cannot display this file"
+        flash[:error] = "Notolab cannot display this file"
         if params[:header_position]
           redirect_to([:list_archive, @course, @assessment, @submission]) && return
         else

@@ -353,7 +353,11 @@ module AssessmentAutograde
                        "timeout" => @autograde_prop.autograde_timeout,
                        "callback_url" => callback_url,
                        "jobName" => job_name,
-                       "limitingKey" => limiting_key }.to_json
+                       "limitingKey" => limiting_key,
+                       "vm" => {
+			  "cores": @autograde_prop.autograde_cores,
+			  "memory": @autograde_prop.autograde_memory
+		       } }.to_json
     begin
       response = TangoClient.addjob("#{course.name}-#{assessment.name}", job_properties)
     rescue TangoClient::TangoException => e

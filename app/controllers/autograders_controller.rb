@@ -11,6 +11,8 @@ class AutogradersController < ApplicationController
     @autograder = Autograder.new do |a|
       a.assessment_id = @assessment.id
       a.autograde_timeout = 180
+      a.autograde_cores = 1
+      a.autograde_memory = 1024
       a.autograde_image = "autograding_image"
       a.release_score = true
     end
@@ -63,6 +65,6 @@ private
   end
 
   def autograder_params
-    params[:autograder].permit(:autograde_timeout, :autograde_image, :release_score)
+    params[:autograder].permit(:autograde_timeout, :autograde_image, :release_score, :autograde_cores, :autograde_memory)
   end
 end

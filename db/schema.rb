@@ -125,6 +125,8 @@ ActiveRecord::Schema.define(version: 20180822154650) do
     t.integer "assessment_id",     limit: 4
     t.integer "autograde_timeout", limit: 4
     t.string  "autograde_image",   limit: 255
+    t.integer "autograde_cores",   limit: 4
+    t.integer "autograde_memory",  limit: 4
     t.boolean "release_score",     limit: 1
   end
 

@@ -154,6 +154,21 @@
       <%= render partial: "handin_form", locals: {modal: false, id: "handin_show_assessment"} %>
       <% if @assessment.embedded_quiz %>
           <script>
+	      var urlArgs = {};
+	      if (location.search) location.search.substr(1).split("&").forEach(function(item) {
+		  var kvp = item.split("=");
+		  var k = kvp[0];
+		  var v = kvp[1] && decodeURIComponent(kvp[1]);
+		  urlArgs[k] = urlArgs[k] || [];
+		  urlArgs[k].push(v);
+	      });
+
+              $(function() {
+		for (k in urlArgs) {
+		  document.getElementsByName(k)[0].value = urlArgs[k];
+		}
+	      });
+
               $.fn.serializeObject = function()
               {
                   var o = {};

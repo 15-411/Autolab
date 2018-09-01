@@ -14,7 +14,7 @@ class Autograder < ActiveRecord::Base
 
   after_save -> { assessment.dump_yaml }
 
-  SERIALIZABLE = Set.new %w(autograde_image autograde_timeout autograde_cores autograde_memory release_score)
+  SERIALIZABLE = Set.new %w(autograde_image autograde_timeout autograde_cores autograde_memory  autograde_fallback_instance_type release_score)
   def serialize
     Utilities.serializable attributes, SERIALIZABLE
   end

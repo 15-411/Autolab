@@ -356,7 +356,8 @@ module AssessmentAutograde
                        "limitingKey" => limiting_key,
                        "vm" => {
 			  "cores": @autograde_prop.autograde_cores,
-			  "memory": @autograde_prop.autograde_memory
+			  "memory": @autograde_prop.autograde_memory,
+		          "fallback_instance_type": @autograde_prop.autograde_fallback_instance_type
 		       } }.to_json
     begin
       response = TangoClient.addjob("#{course.name}-#{assessment.name}", job_properties)

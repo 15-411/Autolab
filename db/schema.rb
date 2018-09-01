@@ -127,6 +127,7 @@ ActiveRecord::Schema.define(version: 20180822154650) do
     t.string  "autograde_image",   limit: 255
     t.integer "autograde_cores",   limit: 4
     t.integer "autograde_memory",  limit: 4
+    t.string  "autograde_fallback_instance_type", limit: 255, default: ""
     t.boolean "release_score",     limit: 1
   end
 

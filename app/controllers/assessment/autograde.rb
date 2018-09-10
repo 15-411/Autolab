@@ -34,7 +34,7 @@ module AssessmentAutograde
 
     # Now that the submission has been scored, update the graded submission.
     submissions.each do |s|
-      aud = assessment.aud_for s.course_user_datum.id
+      aud = @assessment.aud_for s.course_user_datum.id
       aud.update_latest_submission
     end
 

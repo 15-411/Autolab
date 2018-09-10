@@ -32,6 +32,12 @@ module AssessmentAutograde
       autogradeDone(submissions, feedback_str)
     end
 
+    # Now that the submission has been scored, update the graded submission.
+    submissions.each do |s|
+      aud = @assessment.aud_for s.course_user_datum.id
+      aud.update_latest_submission
+    end
+
     render(nothing: true) && return
   rescue
     Rails.logger.error "Exception in autograde_done"

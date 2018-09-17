@@ -585,7 +585,7 @@ module AssessmentAutograde
     rescue StandardError => e
       feedback_str = "An error occurred while parsing the autoresult returned by the Autograder.\n
         \nError message: #{e}\n\n"
-      feedback_str += lines.join if lines && (lines.length < 10_000)
+      feedback_str += lines.join if lines && (lines.length < 30_000)
 	  @assessment.problems.each do |p|
         submissions.each do |submission|
           score = submission.scores.find_or_initialize_by(problem_id: p.id)

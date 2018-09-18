@@ -323,25 +323,25 @@ private
   # this function returns a list of the submissions created by this handin.
 
   def saveHandin(sub)
+    submission = @assessment.submissions.create(course_user_datum_id: @cud.id,
+                                                submitter_ip: request.remote_ip)
+    submission.save_file(sub)
+
     unless @assessment.has_groups?
-      submission = @assessment.submissions.create(course_user_datum_id: @cud.id,
-                                                  submitter_ip: request.remote_ip)
-      submission.save_file(sub)
       return [submission]
     end
 
     aud = @assessment.aud_for @cud.id
     group = aud.group
     if group.nil?
-      submission = @assessment.submissions.create(course_user_datum_id: @cud.id,
-                                                  submitter_ip: request.remote_ip)
-      submission.save_file(sub)
       return [submission]
     end
 
-    submissions = []
+    submissions = [submission]
     ActiveRecord::Base.transaction do
       group.course_user_data.each do |cud|
+        # We added this to the original submission list
+        next if cud.id == @cud.id
         submission = @assessment.submissions.create(course_user_datum_id: cud.id,
                                                     submitter_ip: request.remote_ip)
         submission.save_file(sub)

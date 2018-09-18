@@ -51,7 +51,7 @@ class JobsController < ApplicationController
     # Non-admins have a limited view of the completed
     # jobs. Instructors can see only the completed jobs from
     # the current course. Students can see only their own
-    # jobs.
+    # jobs or their group submission jobs.
     raw_dead_jobs.each do |rjob|
       job = formatRawJob(rjob, false)
 

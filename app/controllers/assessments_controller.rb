@@ -530,14 +530,26 @@ class AssessmentsController < ApplicationController
   action_auth_level :viewStreamingFeedback, :student
   def viewStreamingFeedback
     redirect_to(action: "viewFeedback", feedback: params[:feedback], submission_id: params[:submission_id]) && return unless @submission.in_progress
-    output_file = "#{@submission.course_user_datum.email}_#{@submission.version}_#{@assessment.name}_autograde.txt"
-    response = TangoClient.poll("#{@course.name}-#{@assessment.name}", "#{URI.encode(output_file)}", in_progress = 1)
-    # json is returned when a job is not complete
-    if response.content_type == "application/json"
-      @feedback = "Output file not found. The job may not have started yet; see the Jobs page or try again later."
+    # try each group member
+    aud = @assessment.aud_for @cud.id
+    if aud.group.nil?
+      subs = [@submission]
     else
-      @feedback = response.body
+      subs = @assessment.submissions.where(dave: @submission.dave).all
     end
+
+    subs.each do |sbm|
+      output_file = "#{sbm.course_user_datum.email}_#{sbm.version}_#{@assessment.name}_autograde.txt"
+      response = TangoClient.poll("#{@course.name}-#{@assessment.name}", "#{URI.encode(output_file)}", in_progress = 1)
+      if response.content_type == "application/json"
+        next # try next member
+      else
+        @feedback = response.body
+        return
+      end
+    end
+    # nothing found for all members
+    @feedback = "Output file not found. The job may not have started yet; see the Jobs page or try again later."
   rescue TangoClient::TangoException => e
     @feedback = "Output file not found. The job may not have started yet; see the Jobs page or try again later."
   end

@@ -531,7 +531,8 @@ class AssessmentsController < ApplicationController
   def viewStreamingFeedback
     redirect_to(action: "viewFeedback", feedback: params[:feedback], submission_id: params[:submission_id]) && return unless @submission.in_progress
     # try each group member
-    if group.nil?
+    aud = @assessment.aud_for @cud.id
+    if aud.group.nil?
       subs = [@submission]
     else
       subs = @assessment.submissions.where(dave: @submission.dave).all

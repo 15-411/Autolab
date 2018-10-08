@@ -68,6 +68,7 @@ module AssessmentAutograde
   # action_auth_level :cancel, :student
   def cancel
     @submission = @assessment.submissions.find(params[:submission_id])
+    dave = params[:dave]
     @effective_cud = @submission.course_user_datum
 
     unless @cud.instructor? || @cud.id == @effective_cud.id
@@ -81,7 +82,7 @@ module AssessmentAutograde
       redirect_to([:history, @course, @assessment, cud_id: @effective_cud.id]) && return
     end
 
-    cancelSubmission(@course, @assessment, @submission)
+    cancelSubmission(@course, @assessment, @submission, dave)
     redirect_to([:history, @course, @assessment, cud_id: @effective_cud.id]) && return
   end
 
@@ -171,24 +172,37 @@ module AssessmentAutograde
   # cancelSubmission - submits a cancel request to Tango under the output file
   # corresponding to the submission.
   # Returns the response of cancelJob.
-  def cancelSubmission(course, assessment, submission)
+  def cancelSubmission(course, assessment, submission, dave)
     flash[:error] = "No cancellation request was submitted because the submission is blank" && return if submission.blank?
-    output_file = get_output_file(assessment, submission)
-    status, json_response = tango_cancel(course, assessment, output_file)
-    if status != 0
-      flash[:error] = "Cancellation request failed."
+
+    # try each group member
+    aud = assessment.aud_for @cud.id
+    if aud.group.nil? or dave.nil?
+      subs = [submission]
     else
-      result = json_response['statusId']
-      if result == -1
-        flash[:error] = "Authentication failed."
-      elsif result == -2
-        flash[:error] = "No cancellation request was submitted because no corresponding job was found."
-      elsif result == -3
-        flash[:error] = "No cancellation request was submitted because the job has already finished running."
-      elsif result != 0
-        flash[:error] = "Unknown error in cancellation. Please contact the instructors."
+      subs = assessment.submissions.where(dave: dave).all
+    end
+
+    # Try each group submission
+    subs.each do |sub|
+      output_file = get_output_file(assessment, sub)
+      status, json_response = tango_cancel(course, assessment, output_file)
+      if status != 0
+        flash[:error] = "Cancellation request failed."
       else
-        flash[:success] = "Submission cancellation completed successfully."
+        result = json_response['statusId']
+        if result == -1
+          flash[:error] = "Authentication failed."
+        elsif result == -2
+          flash[:error] = "No cancellation request was submitted because no corresponding job was found."
+        elsif result == -3
+          flash[:error] = "No cancellation request was submitted because the job has already finished running."
+        elsif result != 0
+          flash[:error] = "Unknown error in cancellation. Please contact the instructors."
+        else
+          flash[:success] = "Submission cancellation completed successfully."
+          return
+        end
       end
     end
   end

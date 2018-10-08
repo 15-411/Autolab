@@ -6,5 +6,5 @@
   <b>This will cancel this submission from running. The current progress will not be saved, and the submission will not be graded. This action cannot be undone. (If the submission has already finished running, attempting to cancel the submission will have no effect.)</b>
   <br>
   <br><br>
-  <%= link_to 'Cancel!', [:cancel, @course, @assessment, submission_id: @submission.id], {:method=>'post', :class=>"btn small"} %>
+  <%= link_to 'Cancel!', [:cancel, @course, @assessment, submission_id: @submission.id, dave: @submission.dave], {:method=>'post', :class=>"btn small"} %>
 <% end %>

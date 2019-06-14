@@ -196,29 +196,20 @@ class GroupsController < ApplicationController
     redirect_to(action: :index) && return
   end
 
-  ##
-  # attempts to copy the groups from the assessment with importFrom as the id.
-  # it will leave currently created groups untouched, and won't work if importFrom
-  # has larger groups than this assessment, or no groups at all
-  #
-  action_auth_level :import, :instructor
-  def import
-    ass = @course.assessments.find(params[:ass])
-    if !ass
-      flash[:error] = "Assessment not found."
-      redirect_to(action: :index) && return
-    elsif !ass.has_groups? || ass.group_size > @assessment.group_size || @assessment.id == ass.id
-      flash[:error] = "That assessment cannot be imported."
-      redirect_to(action: :index) && return
+  # returns :success, :not_found, :not_importable
+  def GroupsController.importFromAssessment(assFrom, assTo)
+    if !assFrom
+      return :not_found
+    elsif !assFrom.has_groups? || assFrom.group_size > assTo.group_size || assTo.id == assFrom.id
+      return :not_importable
     end
-
-    ass.groups.each do |g|
+    assFrom.groups.each do |g|
       group = Group.new
       group.name = g.name
       count = 0
       g.assessment_user_data.each do |a|
         cud = a.course_user_datum
-        aud = @assessment.aud_for cud.id
+        aud = assTo.aud_for cud.id
         if aud.group_confirmed(AssessmentUserDatum::UNCONFIRMED)
           aud.group = group
           aud.membership_status = a.membership_status
@@ -226,6 +217,25 @@ class GroupsController < ApplicationController
         end
       end
       group.save! if count > 0
+    end
+    return :success
+  end
+
+  ##
+  # attempts to copy the groups from the assessment with importFrom as the id.
+  # it will leave currently created groups untouched, and won't work if importFrom
+  # has larger groups than this assessment, or no groups at all
+  #
+  action_auth_level :import, :instructor
+  def import
+    assFrom = @course.assessments.find(params[:ass])
+    result = GroupsController.importFromAssessment(assFrom, @assessment)
+    if result == :not_found
+      flash[:error] = "Assessment not found."
+      redirect_to(action: :index) && return
+    elsif result == :not_importable
+      flash[:error] = "That assessment cannot be imported."
+      redirect_to(action: :index) && return
     end
 
     flash[:success] = "Groups Successfully Imported"

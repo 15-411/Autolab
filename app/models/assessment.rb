@@ -431,6 +431,12 @@ private
       version_penalty ||= Penalty.new
       version_penalty.update(s["version_penalty"])
     end
+    if s["import_groups_from"]
+      assFrom = course.assessments.find_by(name: s["import_groups_from"])
+      if GroupsController.importFromAssessment(assFrom, self) != :success
+        raise ('An error has occurred importing the groups from ' + s['import_groups_from'])
+      end
+    end
   end
 
   def default_max_score

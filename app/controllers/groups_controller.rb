@@ -135,6 +135,67 @@ class GroupsController < ApplicationController
     respond_with(@course, @assessment, @group)
   end
 
+  action_auth_level :massImport, :instructor
+  def massImport
+    pairsToImport = params[:body]
+    commaErrors = []
+    emailErrors = []
+    pairsToImport.split("\n").each do |pair|
+      entries = pair.split(",")
+      if entries.length != 3
+        commaErrors.push(pair)
+      else
+        students = entries[0..1]
+        name = entries[2]
+        auds = students.map { |student|
+          u = User.find_by(email: student)
+          if u
+            cud = CourseUserDatum.find_cud_for_course(@course, u.id)
+            if cud
+              @assessment.aud_for cud.id
+            end
+          end
+        }
+        if auds.all?
+          auds.each do |aud|
+            # Remove old group
+            if aud.group
+              group = aud.group
+              ActiveRecord::Base.transaction do
+                group.assessment_user_data.each do |a|
+                  if not auds.include? a
+                    a.group_id = nil
+                    a.membership_status = AssessmentUserDatum::UNCONFIRMED
+                    a.save!
+                  end
+                end
+                group.destroy!
+              end
+            end
+          end
+          g = Group.new
+          g.name = name
+          auds.each do |aud|
+            # Set new group (must be after)
+            aud.group = g
+            aud.membership_status = AssessmentUserDatum::CONFIRMED
+            aud.save!
+          end
+          g.save!
+        else
+          emailErrors.push(pair)
+        end
+      end
+    end
+    if commaErrors.length != 0 || emailErrors.length != 0
+      allMessages = \
+        commaErrors.map { |error| "Skipping #{error}; not pair of emails followed by team name." } \
+          + emailErrors.map { |error| "Skipping #{error}; not valid emails enrolled in course." }
+      flash[:error] = allMessages.join("<br/>")
+    end
+    redirect_to(action: :index) && return
+  end
+
   ##
   # attempts to copy the groups from the assessment with importFrom as the id.
   # it will leave currently created groups untouched, and won't work if importFrom

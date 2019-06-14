@@ -52,6 +52,7 @@ Autolab3::Application.routes.draw do
         end
 
         post "import", on: :collection
+        post "massImport", on: :collection
       end
       resources :problems, except: [:index, :show]
       resource :scoreboard, except: [:new] do

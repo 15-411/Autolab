@@ -41,8 +41,6 @@
   <h2>No Groups have been set yet.</h2>
 <% end %>
 
-<h3><%= link_to 'Create New Group', [:new, @course, @assessment, :group] %></h3>
-
 <% if @grouplessCUDs.size > 0 then %>
   <h2>Users Without Groups</h2>
 
@@ -53,8 +51,20 @@
   </ul>
 <% end %>
 
+<h3>Mass-import groups</h3>
+In this form, you can enter triples of the form: email,email,team_name
+<br/>
+That is, you should enter the two students' email addresses followed by the team name, all separated by commas. You can enter multiple triples on multiple lines.
+
+<%= form_tag [:massImport, @course, @assessment, :groups] do %>
+    <%= text_area_tag :body %>
+    <%= submit_tag 'Import!', class: "btn btn-primary" %>
+<% end %>
+
+<hr />
+
 <% if @groupAssessments.size > 0 then %>
-  <h2>Load Groups from Another Assessment</h2>
+  <h3>Load Groups from Another Assessment</h3>
   <%= form_tag [:import, @course, @assessment, :groups] do %>
     <%= select_tag :ass, options_from_collection_for_select(@groupAssessments, :id, :name) %>
     <%= submit_tag 'Go!', class: "btn btn-primary" %>

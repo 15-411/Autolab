@@ -141,7 +141,7 @@ class User < ActiveRecord::Base
     user.skip_confirmation!
 
     if user.save
-      # user.send_reset_password_instructions
+      user.send_reset_password_instructions
       return user
     else
       return nil

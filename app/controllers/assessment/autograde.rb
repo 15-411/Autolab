@@ -198,9 +198,9 @@ module AssessmentAutograde
         elsif result == -3
           flash[:error] = "No cancellation request was submitted because the job has already finished running."
         elsif result != 0
-          flash[:error] = "Unknown error in cancellation. Please contact the instructors."
+          flash[:error] = "A job can't be cancelled if it's been assigned a VM but it hasn't started running on the VM yet. Please wait until the job is running on the VM to try to cancel it again."
         else
-          flash[:success] = "Submission cancellation completed successfully."
+          flash[:success] = "Cancellation request successfully submitted. The job will terminate soon; there is no reason to submit another cancellation request."
           return
         end
       end

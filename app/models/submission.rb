@@ -30,6 +30,7 @@ class Submission < ActiveRecord::Base
   # keep track of latest submission
   after_save :update_latest_submission, if: :version_changed?
   after_save :update_latest_submission, if: :ignored_changed?
+  after_save :update_latest_submission, if: :tweak_id_changed?
   after_save do |sub|
     COURSE_LOGGER.log("Submission #{sub.id} SAVED for " \
       "#{sub.course_user_datum.user.email} on" \

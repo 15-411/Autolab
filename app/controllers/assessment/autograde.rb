@@ -17,6 +17,7 @@ module AssessmentAutograde
     # there can be multiple submission with the same dave if this was a group submission
     submissions = Submission.where(dave: params[:dave]).all
 
+    running_time_seconds = params[:runningTimeSeconds].to_i
     feedback_str = params[:file].read
 
     COURSE_LOGGER.log("autograde_done")
@@ -27,9 +28,9 @@ module AssessmentAutograde
     require_relative(Rails.root.join("assessmentConfig", "#{@course.name}-#{@assessment.name}.rb"))
 
     if @assessment.overwrites_method?(:autogradeDone)
-      @assessment.config_module.autogradeDone(submissions, feedback_str)
+      @assessment.config_module.autogradeDone(submissions, running_time_seconds, feedback_str)
     else
-      autogradeDone(submissions, feedback_str)
+      autogradeDone(submissions, running_time_seconds, feedback_str)
     end
 
     # Now that the submission has been scored, update the graded submission.
@@ -427,14 +428,15 @@ module AssessmentAutograde
       return -11
     end
 
+    running_time_seconds = 80 # TODO: return running_time from poll as well.
     if feedback.nil?
       return -12
     else
       if assessment.overwrites_method?(:autogradeDone)
-        assessment.config_module.autogradeDone(submissions, feedback)
+        assessment.config_module.autogradeDone(submissions, running_time_seconds, feedback)
       else
         # this doesn't work because autogradeDone is defined in submissions_controller
-        autogradeDone(submissions, feedback)
+        autogradeDone(submissions, running_time_seconds, feedback)
       end
 
       return 0
@@ -533,7 +535,7 @@ module AssessmentAutograde
   # route getting called by Tango or by the Autograde module polling Tango. In either case,
   # submission is confirmed via dave key to have been created by Autolab
   #
-  def autogradeDone(submissions, feedback)
+  def autogradeDone(submissions, running_time_seconds, feedback)
     ass_dir = @assessment.folder_path
 
     submissions.each do |submission|
@@ -546,7 +548,7 @@ module AssessmentAutograde
       end
     end
 
-    saveAutograde(submissions, feedback)
+    saveAutograde(submissions, running_time_seconds, feedback)
   end
 
   ##
@@ -555,7 +557,7 @@ module AssessmentAutograde
   # each autograded problem. The default autoresult string is in
   # JSON format, but this can be overrriden in the lab.rb file.
   #
-  def saveAutograde(submissions, feedback)
+  def saveAutograde(submissions, running_time_seconds, feedback)
     begin
       lines = feedback.lines
       fail "The Autograder returned no output. \n" if lines.nil?
@@ -593,6 +595,7 @@ module AssessmentAutograde
           submission.autoresult = autoresult
           submission.dave = nil
           submission.in_progress = false
+	  submission.budget_used = running_time_seconds
           submission.save!
         end
       end

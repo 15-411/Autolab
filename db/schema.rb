@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180901025420) do
+ActiveRecord::Schema.define(version: 20190709195549) do
 
   create_table "annotations", force: :cascade do |t|
     t.integer  "submission_id", limit: 4
@@ -122,13 +122,13 @@ ActiveRecord::Schema.define(version: 20180901025420) do
   end
 
   create_table "autograders", force: :cascade do |t|
-    t.integer "assessment_id",     limit: 4
-    t.integer "autograde_timeout", limit: 4
-    t.string  "autograde_image",   limit: 255
-    t.integer "autograde_cores",   limit: 4, default: 1
-    t.integer "autograde_memory",  limit: 4, default: 1024
+    t.integer "assessment_id",                    limit: 4
+    t.integer "autograde_timeout",                limit: 4
+    t.string  "autograde_image",                  limit: 255
+    t.integer "autograde_cores",                  limit: 4,   default: 1
+    t.integer "autograde_memory",                 limit: 4,   default: 1024
     t.string  "autograde_fallback_instance_type", limit: 255, default: ""
-    t.boolean "release_score",     limit: 1
+    t.boolean "release_score",                    limit: 1
   end
 
   create_table "course_user_data", force: :cascade do |t|
@@ -253,6 +253,7 @@ ActiveRecord::Schema.define(version: 20180901025420) do
     t.text     "settings",                  limit: 65535
     t.text     "embedded_quiz_form_answer", limit: 65535
     t.boolean  "in_progress",                             default: false
+    t.integer  "budget_used",                             default: 0
   end
 
   add_index "submissions", ["assessment_id"], name: "index_submissions_on_assessment_id"

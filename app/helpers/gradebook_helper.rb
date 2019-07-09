@@ -29,6 +29,12 @@ module GradebookHelper
                      sortable: true, cssClass: "computed assessment_final_score",
                      headerCssClass: "assessment_final_score",
                      before_grading_deadline: matrix.before_grading_deadline?(asmt.id) }
+
+        columns << { id: asmt.name + "_budget_used", name: asmt.display_name + " Budget Used",
+		     field: asmt.name + "_budget_used",
+                     sortable: true, cssClass: "computed assessment_final_score_budget_used",
+                     headerCssClass: "assessment_budget_used",
+                     before_grading_deadline: matrix.before_grading_deadline?(asmt.id) }
       end
 
       # category average column
@@ -95,6 +101,7 @@ module GradebookHelper
         aud = a.aud_for cud
         total_grace_days += aud.grace_days_used
         total_num_submissions += aud.num_submissions!
+	row[a.name + "_budget_used"] = aud.budget_used
       end
       row["num_submissions"] = total_num_submissions
       row["grace_days"] = total_grace_days
@@ -125,6 +132,7 @@ module GradebookHelper
       course.assessments_with_category(cat).each do |asmt|
         next unless matrix.has_assessment? asmt.id
         header << asmt.name
+	header << asmt.name + " Budget Used"
       end
       header << "#{cat} Average"
     end
@@ -161,6 +169,7 @@ module GradebookHelper
             next unless matrix.has_assessment? asmt.id
 
             row << formatted_status(matrix.cell(asmt.id, cud.id)["status"])
+	    row << matrix.cell(asmt.id, cud.id)["budget_used"]
           end
 
           row << round(matrix.category_average(cat, cud.id))

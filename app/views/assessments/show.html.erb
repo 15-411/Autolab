@@ -146,6 +146,8 @@
         </p>
 	<p class="valign-wrapper"><i class="material-icons valign">school</i>&nbsp;&nbsp;Grading strategy:&nbsp;&nbsp;<b>
    <%= @assessment.grade_latest ? "Latest submission" : "Maximum-scoring submission" %></b></p>
+	<p class="valign-wrapper"><i class="material-icons valign">euro_symbol</i>&nbsp;&nbsp;Grading budget used:&nbsp;&nbsp;<b>
+   <%= @aud.budget_used_string %></b></p>
 
         <% if @cud.instructor? and @assessment.exam? %>
         <p class="attention">This is an exam. While it is in progress, please check Admin > Edit Course > Exam In Progress.</p>

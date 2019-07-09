@@ -172,6 +172,22 @@ class AssessmentUserDatum < ActiveRecord::Base
     (s = latest_submission) ? s.penalty_late_days : 0
   end
 
+  def budget_used_string
+    mins = budget_used / 60
+    if mins == 1
+      "1 minute"
+    else
+      mins.to_s + " minutes"
+    end
+  end
+
+  def budget_used
+    Submission.where(assessment_id: assessment_id,
+		     course_user_datum_id: course_user_datum_id,
+		     ignored: false)
+	      .sum(:budget_used)
+  end
+
   # TODO
   # Refer to https://github.com/autolab/autolab-src/wiki/Caching
   def invalidate_cgdubs_for_assessments_after

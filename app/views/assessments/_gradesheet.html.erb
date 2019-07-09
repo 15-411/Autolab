@@ -32,6 +32,7 @@
                   <% end %>
                   "tweak",
                 <% end %>
+	        "budget_used",
                 "total"];
     problems = [<% for p in @assessment.problems do %>
                   {
@@ -64,6 +65,7 @@
                   edit_course_assessment_submission_path(@course, @assessment, s),
                   tabindex: -1 %>`,
             <% end %>
+            "budget_used": "<%= s.aud.budget_used %>s",
             "total": "<%= computed_score(history_url s.course_user_datum) { s.final_score @cud } %>"
           },
       <% end %>
@@ -138,6 +140,7 @@
         <% end %>
         { title: "Tweak", className: "tweak", data: "tweak" },
       <% end %>
+      { title: "Budget Used", className: "budget_used", data: "budget_used" },
       { title: "Total", className: "total", data: "total" }
     ];
 

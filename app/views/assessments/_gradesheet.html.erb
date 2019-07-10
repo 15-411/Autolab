@@ -65,7 +65,7 @@
                   edit_course_assessment_submission_path(@course, @assessment, s),
                   tabindex: -1 %>`,
             <% end %>
-            "budget_used": "<%= s.aud.budget_used %>s",
+            "budget_used": "<%= s.aud.budget_used > 0 ? s.aud.budget_used.to_s + "s" : raw("&ndash;") %>",
             "total": "<%= computed_score(history_url s.course_user_datum) { s.final_score @cud } %>"
           },
       <% end %>

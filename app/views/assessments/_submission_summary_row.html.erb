@@ -114,7 +114,7 @@
   </td>
 
   <td>
-    <%= submission.budget_used %>s
+    <%= submission.budget_used > 0 ? submission.budget_used.to_s + "s" : raw("&ndash;") %>
   </td>
 
   <% if @cud.instructor? then %>

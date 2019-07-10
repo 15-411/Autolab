@@ -617,6 +617,7 @@ module AssessmentAutograde
         submissions.each do |submission|
           submission.dave = nil
           submission.in_progress = false
+	  submission.budget_used = running_time_seconds
           submission.save!
         end
       end

@@ -156,20 +156,37 @@
       <%= render partial: "handin_form", locals: {modal: false, id: "handin_show_assessment"} %>
       <% if @assessment.embedded_quiz %>
           <script>
-	      var urlArgs = {};
-	      if (location.search) location.search.substr(1).split("&").forEach(function(item) {
-		  var kvp = item.split("=");
-		  var k = kvp[0];
-		  var v = kvp[1] && decodeURIComponent(kvp[1]);
-		  urlArgs[k] = urlArgs[k] || [];
-		  urlArgs[k].push(v);
-	      });
+              var urlArgs = {};
+              if (location.search) location.search.substr(1).split("&").forEach(function(item) {
+                  var kvp = item.split("=");
+                  var k = kvp[0];
+                  var v = kvp[1] && decodeURIComponent(kvp[1]);
+                  urlArgs[k] = urlArgs[k] || [];
+                  urlArgs[k].push(v);
+              });
 
               $(function() {
-		for (k in urlArgs) {
-		  document.getElementsByName(k)[0].value = urlArgs[k];
-		}
-	      });
+                  for (var k in urlArgs) {
+                      var v = urlArgs[k];
+                      var elem = document.getElementsByName(k)[0]
+                      // Then it's a dropdown.
+                      if (elem.children.length > 0) {
+                          // First, get correct element.
+                          for (var j = 0; j < elem.children.length; j++) {
+                              if (elem.children[j].value == v) {
+                                  // Then, update the string value of dropdown
+                                  var p = elem.parentElement;
+                                  var dropdown = p.getElementsByClassName("select-dropdown")[0];
+                                  dropdown.value = elem.children[j].text;
+                                  elem.value = v;
+                                  break;
+                              }
+                          }
+                      } else {
+                          elem.value = v;
+                      }
+                  }
+              });
 
               $.fn.serializeObject = function()
               {

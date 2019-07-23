@@ -193,6 +193,10 @@
                   var o = {};
                   var a = this.serializeArray();
                   $.each(a, function() {
+                      if (this.name == 'submission[embedded_quiz_form_answer]') {
+                          // Avoid exponential blowup in encoding if you repeatedly hit back...
+                          return;
+                      }
                       if (o[this.name] !== undefined) {
                           if (!o[this.name].push) {
                               o[this.name] = [o[this.name]];

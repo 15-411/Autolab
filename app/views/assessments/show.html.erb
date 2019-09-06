@@ -168,8 +168,9 @@
               $(function() {
                   for (var k in urlArgs) {
                       var v = urlArgs[k];
-                      var elem = document.getElementsByName(k)[0]
-                      // Then it's a dropdown.
+                      var elem = document.getElementsByName(k)[0];
+                      if (!elem) continue;
+                      // Check if this is a dropdown.
                       if (elem.children.length > 0) {
                           // First, get correct element.
                           for (var j = 0; j < elem.children.length; j++) {

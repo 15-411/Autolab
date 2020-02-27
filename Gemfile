@@ -52,7 +52,7 @@ gem 'sqlite3'
 gem 'thin'
 
 # External authentication
-gem 'devise', '=3.4.0'
+gem 'devise', '4.7.1'
 gem 'omniauth', '>=1.2.2'
 gem 'omniauth-facebook', '>=2.0.0'
 gem 'omniauth-google-oauth2', '>=0.2.5'
